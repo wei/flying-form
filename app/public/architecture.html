@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Flying Form technical architecture: full tech stack and the photo-to-submission request path." />
+<title>Flying Form — Technical Architecture</title>
+<style>
+  :root {
+    --ground: #f5f6f9;
+    --surface: #ffffff;
+    --panel: #eef0f6;
+    --ink: #23252e;
+    --muted: #5b6072;
+    --line: #d9dce6;
+    --line-strong: #c3c8d6;
+
+    --indigo: #37478a;
+    --indigo-ink: #ffffff;
+    --indigo-soft: #e7eaf6;
+
+    --shu: #c74a2c;
+    --shu-ink: #ffffff;
+    --shu-soft: #f7e5de;
+
+    --teal: #2c7d6f;
+    --teal-soft: #dcece8;
+
+    --chip-bg: #ffffff;
+    --chip-line: #d3d8e4;
+
+    --shadow: 0 1px 2px rgba(20, 24, 40, .05), 0 6px 20px rgba(20, 24, 40, .05);
+
+    --font-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+    --font-ui: "IBM Plex Sans JP", system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #14161d;
+      --surface: #1d202a;
+      --panel: #242835;
+      --ink: #eceef4;
+      --muted: #a3a8ba;
+      --line: #313746;
+      --line-strong: #3d4454;
+      --indigo: #90a0e2;
+      --indigo-ink: #16181f;
+      --indigo-soft: #272e4d;
+      --shu: #e8795b;
+      --shu-ink: #1a1210;
+      --shu-soft: #38241d;
+      --teal: #5cb8a7;
+      --teal-soft: #1c3a34;
+      --chip-bg: #222634;
+      --chip-line: #363d4d;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #f5f6f9; --surface: #ffffff; --panel: #eef0f6; --ink: #23252e;
+    --muted: #5b6072; --line: #d9dce6; --line-strong: #c3c8d6;
+    --indigo: #37478a; --indigo-ink: #ffffff; --indigo-soft: #e7eaf6;
+    --shu: #c74a2c; --shu-ink: #ffffff; --shu-soft: #f7e5de;
+    --teal: #2c7d6f; --teal-soft: #dcece8; --chip-bg: #ffffff; --chip-line: #d3d8e4;
+    --shadow: 0 1px 2px rgba(20,24,40,.05), 0 6px 20px rgba(20,24,40,.05);
+  }
+  :root[data-theme="dark"] {
+    --ground: #14161d; --surface: #1d202a; --panel: #242835; --ink: #eceef4;
+    --muted: #a3a8ba; --line: #313746; --line-strong: #3d4454;
+    --indigo: #90a0e2; --indigo-ink: #16181f; --indigo-soft: #272e4d;
+    --shu: #e8795b; --shu-ink: #1a1210; --shu-soft: #38241d;
+    --teal: #5cb8a7; --teal-soft: #1c3a34; --chip-bg: #222634; --chip-line: #363d4d;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: clamp(28px, 5vw, 64px) clamp(18px, 4vw, 48px) 72px; }
+
+  /* ---------- Header ---------- */
+  header.masthead { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 36px; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--shu); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1.08; letter-spacing: .01em;
+    margin: 0 0 14px; text-wrap: balance;
+  }
+  h1 .jp { color: var(--indigo); }
+  .lede { max-width: 62ch; color: var(--muted); font-size: clamp(15px, 1.6vw, 17px); margin: 0 0 20px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-mono); font-size: 12.5px;
+    padding: 6px 11px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+  }
+  .badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.indigo { background: var(--indigo); }
+  .dot.shu { background: var(--shu); }
+  .dot.teal { background: var(--teal); }
+
+  .section-label {
+    font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; gap: 12px; margin: 0 0 16px;
+  }
+  .section-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  /* ---------- Request path ribbon ---------- */
+  .ribbon-scroll { overflow-x: auto; padding-bottom: 6px; margin-bottom: 44px; }
+  .ribbon { display: flex; align-items: stretch; gap: 0; min-width: 720px; }
+  .step { position: relative; flex: 1; padding: 0 18px; }
+  .step:not(:last-child)::after {
+    content: "→"; position: absolute; right: -7px; top: 14px;
+    color: var(--line-strong); font-size: 15px;
+  }
+  .step .n {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; margin-bottom: 10px;
+    background: var(--indigo-soft); color: var(--indigo); border: 1px solid transparent;
+  }
+  .step.ai .n { background: var(--shu-soft); color: var(--shu); }
+  .step h4 { margin: 0 0 4px; font-size: 13.5px; font-weight: 600; }
+  .step p { margin: 0; font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+
+  /* ---------- Tiers ---------- */
+  .tiers { display: flex; flex-direction: column; gap: 0; }
+  .tier {
+    position: relative;
+    display: grid; grid-template-columns: 190px 1fr; gap: 28px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+  .tier + .tier { margin-top: 34px; }
+  /* connecting spine */
+  .tier:not(:last-child)::before {
+    content: ""; position: absolute; left: 50%; bottom: -34px; height: 34px;
+    width: 2px; background: var(--line-strong); transform: translateX(-50%);
+  }
+  .tier:not(:last-child)::after {
+    content: ""; position: absolute; left: 50%; bottom: -34px;
+    width: 9px; height: 9px; border-right: 2px solid var(--line-strong);
+    border-bottom: 2px solid var(--line-strong); transform: translateX(-50%) rotate(45deg);
+  }
+
+  .tier-head .role {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 8px;
+  }
+  .tier-head h3 { margin: 0 0 6px; font-size: 19px; font-family: var(--font-display); font-weight: 700; }
+  .tier-head .sub { margin: 0; font-size: 13px; color: var(--muted); }
+  .tier-head .glyph {
+    font-family: var(--font-display); font-size: 34px; color: var(--indigo);
+    line-height: 1; display: block; margin-bottom: 12px; opacity: .9;
+  }
+
+  .tier-body { display: flex; flex-direction: column; gap: 14px; }
+  .desc { margin: 0; font-size: 14px; }
+  .nodes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .node {
+    font-size: 12.5px; padding: 5px 10px; border-radius: 8px;
+    background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+  }
+  .node b { font-weight: 600; }
+  .node .path { font-family: var(--font-mono); color: var(--indigo); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 12px;
+    padding: 5px 10px; border-radius: 7px;
+    background: var(--chip-bg); border: 1px solid var(--chip-line); color: var(--ink);
+    display: inline-flex; gap: 6px; align-items: baseline;
+  }
+  .chip .v { color: var(--muted); }
+
+  /* accent variants */
+  .tier.ai { border-color: var(--shu); background: linear-gradient(180deg, var(--shu-soft) 0%, var(--surface) 55%); }
+  .tier.ai .tier-head .glyph,
+  .tier.ai .tier-head h3 { color: var(--shu); }
+  .tier.ai .tier-head .role { color: var(--shu); }
+  .tier.ai .chip { border-color: var(--shu); }
+  .tier.ai .chip .v { color: var(--shu); }
+
+  .tier.data .tier-head .glyph { color: var(--teal); }
+  .tier.data .node .path { color: var(--teal); }
+
+  /* ---------- Thesis cards ---------- */
+  .thesis { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 46px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 22px; box-shadow: var(--shadow);
+  }
+  .card .k { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; display:flex; gap:9px; align-items:center; }
+  .card.safe .k { color: var(--indigo); }
+  .card.jp .k { color: var(--shu); }
+  .card h3 { margin: 0 0 8px; font-size: 17px; font-family: var(--font-display); }
+  .card p { margin: 0; font-size: 13.5px; color: var(--muted); }
+  .card code { font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--panel); padding: 1px 5px; border-radius: 4px; }
+
+  footer { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; font-family: var(--font-mono); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+
+  @media (max-width: 720px) {
+    .tier { grid-template-columns: 1fr; gap: 16px; }
+    .tier-head .glyph { display: inline-block; margin: 0 0 6px; }
+    .thesis { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Technical Architecture</p>
+    <h1>Flying Form <span class="jp">住民異動届</span> stack</h1>
+    <p class="lede">Photograph a paper form, get a validated bilingual mobile form in seconds. One React SPA, a thin proxy, Kimi K2.7 on ai&amp; for every model call, and Firestore for the round trip. Here is every technology in the path.</p>
+    <div class="badges">
+      <span class="badge"><span class="dot shu"></span>Kimi K2.7 · ai&amp; inference</span>
+      <span class="badge"><span class="dot indigo"></span>region asia-northeast1 (Japan)</span>
+      <span class="badge"><span class="dot teal"></span>no-auth demo MVP</span>
+    </div>
+  </header>
+
+  <p class="section-label">The round trip · one request path</p>
+  <div class="ribbon-scroll">
+    <div class="ribbon">
+      <div class="step"><div class="n">1</div><h4>Photo</h4><p>paper form → data URL</p></div>
+      <div class="step"><div class="n">2</div><h4>POST /api/kimi</h4><p>hosting rewrite → proxy</p></div>
+      <div class="step ai"><div class="n">3</div><h4>Kimi vision</h4><p>ai& · photo → JSON</p></div>
+      <div class="step"><div class="n">4</div><h4>Zod validate</h4><p>closed enum · retry ×3</p></div>
+      <div class="step"><div class="n">5</div><h4>Publish</h4><p>Firestore + form QR</p></div>
+      <div class="step"><div class="n">6</div><h4>Phone wizard</h4><p>grouped · EN/JA</p></div>
+      <div class="step"><div class="n">7</div><h4>Submit</h4><p>values → success QR</p></div>
+      <div class="step"><div class="n">8</div><h4>Scan back</h4><p>submission opens live</p></div>
+    </div>
+  </div>
+
+  <p class="section-label">Architecture tiers · technologies used</p>
+  <div class="tiers">
+
+    <section class="tier presentation">
+      <div class="tier-head">
+        <span class="glyph">面</span>
+        <p class="role">Presentation</p>
+        <h3>Client SPA</h3>
+        <p class="sub">One responsive app, phone-first fill</p>
+      </div>
+      <div class="tier-body">
+        <p class="desc">A single-page app with two surfaces. The UX budget goes to the visitor wizard; the dashboard is desk-friendly.</p>
+        <div class="nodes">
+          <span class="node"><span class="path">/admin</span> &nbsp;operator dashboard · create flow · QR scan</span>
+          <span class="node"><span class="path">/f/:formId</span> &nbsp;grouped wizard · EN/JA toggle · success QR</span>
+        </div>
+        <div class="chips">
+          <span class="chip">React <span class="v">19.2</span></span>
+          <span class="chip">React Router <span class="v">7.18</span></span>
+          <span class="chip">Vite <span class="v">8.1</span></span>
+          <span class="chip">TypeScript <span class="v">6.0</span></span>
+          <span class="chip">Zod <span class="v">4.4</span></span>
+          <span class="chip">qrcode.react <span class="v">4.2</span></span>
+          <span class="chip">html5-qrcode <span class="v">2.3</span></span>
+          <span class="chip">IBM Plex Sans JP</span>
+          <span class="chip">Shippori Mincho</span>
+          <span class="chip">IBM Plex Mono</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="tier delivery">
+      <div class="tier-head">
+        <span class="glyph">配</span>
+        <p class="role">Delivery</p>
+        <h3>Firebase Hosting</h3>
+        <p class="sub">flying-form-9f6b3.web.app</p>
+      </div>
+      <div class="tier-body">
+        <p class="desc">Serves the static build and routes traffic: SPA fallback for app routes, and a rewrite that sends the model path to the function.</p>
+        <div class="chips">
+          <span class="chip">Firebase Hosting</span>
+          <span class="chip">SPA rewrite <span class="v">** → /index.html</span></span>
+          <span class="chip">API rewrite <span class="v">/api/kimi → fn</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="tier compute">
+      <div class="tier-head">
+        <span class="glyph">通</span>
+        <p class="role">Compute</p>
+        <h3>Cloud Function proxy</h3>
+        <p class="sub">CORS shim, key stays server-side</p>
+      </div>
+      <div class="tier-body">
+        <p class="desc">A thin proxy exists only because the ai&amp; endpoint has no CORS. The browser never holds the key or calls ai&amp; directly.</p>
+        <div class="chips">
+          <span class="chip">Cloud Functions <span class="v">v2</span></span>
+          <span class="chip">Node <span class="v">22</span></span>
+          <span class="chip">onRequest</span>
+          <span class="chip">region <span class="v">asia-northeast1</span></span>
+          <span class="chip">timeout <span class="v">300s</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="tier ai">
+      <div class="tier-head">
+        <span class="glyph">知</span>
+        <p class="role">Intelligence</p>
+        <h3>ai&amp; inference</h3>
+        <p class="sub">Every model call. In Japan.</p>
+      </div>
+      <div class="tier-body">
+        <p class="desc">The only AI in the system, and the qualification gate: vision reads the paper into a bilingual schema; the same model powers handwritten prefill. No other provider is ever called.</p>
+        <div class="nodes">
+          <span class="node"><b>Schema generation</b> · vision · photo → validated bilingual schema</span>
+          <span class="node"><b>Prefill</b> · vision · filled copy → values by field id <em>(scaffolded)</em></span>
+        </div>
+        <div class="chips">
+          <span class="chip">Kimi K2.7 <span class="v">moonshotai/kimi-k2.7</span></span>
+          <span class="chip">/v1/chat/completions <span class="v">OpenAI-compatible</span></span>
+          <span class="chip">vision <span class="v">image_url</span></span>
+          <span class="chip">temperature <span class="v">0.2</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="tier data">
+      <div class="tier-head">
+        <span class="glyph">録</span>
+        <p class="role">Data</p>
+        <h3>Cloud Firestore</h3>
+        <p class="sub">Cross-device store, live listeners</p>
+      </div>
+      <div class="tier-body">
+        <p class="desc">The laptop and the visitor's phone are different devices, so state lives in Firestore. Structure is separate from values; a submission is just a filled <code>values</code> map.</p>
+        <div class="nodes">
+          <span class="node"><span class="path">forms/{id}</span> &nbsp;{ schema, createdAt }</span>
+          <span class="node"><span class="path">forms/{id}/submissions/{id}</span> &nbsp;{ values, createdAt }</span>
+        </div>
+        <div class="chips">
+          <span class="chip">Firestore <span class="v">SDK 12</span></span>
+          <span class="chip">onSnapshot <span class="v">realtime</span></span>
+          <span class="chip">getCountFromServer</span>
+          <span class="chip">security rules</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p class="section-label" style="margin-top:46px">Why the stack is shaped this way</p>
+  <div class="thesis">
+    <div class="card safe">
+      <p class="k"><span>&#128274;</span> Safe by construction</p>
+      <h3>The generator can't emit a broken form</h3>
+      <p>Kimi output is constrained to a closed nine-type enum (<code>text</code> <code>email</code> <code>tel</code> <code>number</code> <code>date</code> <code>select</code> <code>radio</code> <code>checkbox</code> <code>textarea</code>), fence-stripped, <code>JSON.parse</code>d in a try/catch, and Zod-validated before render. Bad output is rejected and retried, never shown.</p>
+    </div>
+    <div class="card jp">
+      <p class="k"><span>&#128510;</span> Sovereign</p>
+      <h3>Personal data stays on Japan inference</h3>
+      <p>Vision and text both run on Kimi K2.7 on ai&amp; in <code>asia-northeast1</code>. The browser never calls a foreign model API; the proxy forwards server-side. PII on the form is processed in Japan, not shipped abroad.</p>
+    </div>
+  </div>
+
+  <footer>
+    <span>Flying Form</span>
+    <span>ai&amp; × Moonshot Tokyo Hackathon Night</span>
+    <span>Enterprise Workflow / AI Agent</span>
+    <span>MIT</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -77,6 +77,8 @@ flowchart LR
 
 One JSON object flows through the whole system. Structure is separate from values, so the schema is generated once and every submission is just a `values` map keyed by field id.
 
+For the full tech stack laid out tier by tier, open the interactive diagram: [`app/public/architecture.html`](./app/public/architecture.html) (served live at [flying-form-9f6b3.web.app/architecture.html](https://flying-form-9f6b3.web.app/architecture.html) after deploy).
+
 ### Four things that hold it together
 
 | | Guarantee | How |
@@ -173,6 +175,7 @@ flying-form/
 
 ## Design docs
 
+- [`app/public/architecture.html`](./app/public/architecture.html): interactive technical architecture and full tech-stack diagram
 - [`PRODUCT.md`](./PRODUCT.md): positioning, brand, and design principles
 - [`flying-form-prd.md`](./flying-form-prd.md): full PRD, including requirements, data schema, Kimi prompts, and the demo script
 
