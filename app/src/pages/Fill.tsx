@@ -47,7 +47,8 @@ export default function Fill() {
         <div className="success-check" aria-hidden="true">✓</div>
         <h1>{t("successTitle", lang)}</h1>
         <p>{t("successBody", lang)}</p>
-        <div className="qr-box">
+        <div className="qr-box viewfinder">
+          <span className="vf" aria-hidden="true" />
           <LinkedQR value={qrPayload} size={220} />
         </div>
         <p className="sub-ref">#{subId}</p>
@@ -99,10 +100,12 @@ export default function Fill() {
       >
         <div className="progress-bar" style={{ width: `${((step + 1) / sections.length) * 100}%` }} />
       </div>
-      <p className="step-label">
-        {t("step", lang)} {step + 1} {t("of", lang)} {sections.length} ·{" "}
-        {lang === "ja" ? section.title_ja : section.title_en}
+      <p className="step-count">
+        {t("step", lang)} {step + 1} {t("of", lang)} {sections.length}
       </p>
+      <h2 className="section-title">
+        {lang === "ja" ? section.title_ja : section.title_en}
+      </h2>
       <main>
         {section.fields.map((f) => (
           <FieldInput

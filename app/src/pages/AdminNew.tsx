@@ -53,13 +53,38 @@ export default function AdminNew() {
     }
   };
 
+  const stageIndex =
+    stage.s === "pick" || stage.s === "generating" || stage.s === "error"
+      ? 0
+      : stage.s === "preview" || stage.s === "publishing"
+        ? 1
+        : 2;
+  const STAGES = ["Upload", "Review", "Live"];
+
   return (
     <AdminShell
       title="New form"
       subtitle="Upload a paper form and Kimi will build the digital version."
     >
+      <ol className="stages" aria-label="Create form progress">
+        {STAGES.map((name, i) => (
+          <li
+            key={name}
+            className={`stage${i === stageIndex ? " current" : i < stageIndex ? " done" : ""}`}
+            aria-current={i === stageIndex ? "step" : undefined}
+          >
+            <span className="stage-dot" aria-hidden="true">
+              {i < stageIndex ? "✓" : i + 1}
+            </span>
+            {name}
+            {i < STAGES.length - 1 && <span className="stage-rule" aria-hidden="true" />}
+          </li>
+        ))}
+      </ol>
+
       {stage.s === "pick" && (
-        <label className="dropzone">
+        <label className="dropzone viewfinder">
+          <span className="vf" aria-hidden="true" />
           <input
             type="file"
             accept="image/*"
@@ -110,7 +135,8 @@ export default function AdminNew() {
       {stage.s === "published" && (
         <div className="published">
           <h2>Form is live</h2>
-          <div className="qr-box">
+          <div className="qr-box viewfinder">
+            <span className="vf" aria-hidden="true" />
             <LinkedQR value={`${location.origin}/f/${stage.formId}`} size={260} />
           </div>
           <p>

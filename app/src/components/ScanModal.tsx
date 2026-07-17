@@ -55,7 +55,10 @@ export default function ScanModal({ onResult, onClose }: Props) {
     >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>Scan success QR</h2>
-        <div id="qr-reader" style={{ width: 320 }} />
+        <div className="viewfinder" style={{ width: 320 }}>
+          <span className="vf" aria-hidden="true" />
+          <div id="qr-reader" style={{ width: 320 }} />
+        </div>
         <button className="btn secondary" onClick={onClose}>
           Cancel
         </button>

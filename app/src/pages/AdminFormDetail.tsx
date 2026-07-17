@@ -20,6 +20,7 @@ export default function AdminFormDetail() {
   const [form, setForm] = useState<StoredForm | null | undefined>(undefined);
   const [subs, setSubs] = useState<Submission[]>([]);
   const [scanning, setScanning] = useState(false);
+  const [copied, setCopied] = useState(false);
   const nav = useNavigate();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -88,12 +89,25 @@ export default function AdminFormDetail() {
     >
       <div className="detail-grid">
         <aside className="detail-side">
-          <div className="qr-box">
+          <div className="qr-box viewfinder">
+            <span className="vf" aria-hidden="true" />
             <LinkedQR value={`${location.origin}/f/${form.id}`} size={160} />
           </div>
-          <a href={`/f/${form.id}`} target="_blank" rel="noreferrer">
-            Open form
-          </a>
+          <div className="side-actions">
+            <a className="btn secondary" href={`/f/${form.id}`} target="_blank" rel="noreferrer">
+              Open form
+            </a>
+            <button
+              className="btn secondary"
+              onClick={() => {
+                navigator.clipboard.writeText(`${location.origin}/f/${form.id}`);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              }}
+            >
+              {copied ? "Copied" : "Copy link"}
+            </button>
+          </div>
           <p className="meta">{subs.length} {subs.length === 1 ? "submission" : "submissions"}</p>
         </aside>
 
