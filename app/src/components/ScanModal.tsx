@@ -17,7 +17,15 @@ export default function ScanModal({ onResult, onClose }: Props) {
     if (!dialog) return;
     dialog.showModal();
 
-    const scanner = new Html5Qrcode("qr-reader");
+    let scanner: Html5Qrcode;
+    try {
+      scanner = new Html5Qrcode("qr-reader");
+    } catch (err) {
+      alert(`Camera error: ${err}`);
+      dialog.close();
+      onClose();
+      return;
+    }
     scannerRef.current = scanner;
 
     scanner

@@ -618,6 +618,10 @@ dialog.modal-backdrop {
   padding: 0;
   border: none;
   background: oklch(0 0 0 / 0.45);
+}
+/* only the open dialog paints; never override the UA's display:none on closed dialogs */
+dialog.modal-backdrop:not([open]) { display: none; }
+dialog.modal-backdrop[open] {
   display: flex;
   align-items: center;
   justify-content: center;
