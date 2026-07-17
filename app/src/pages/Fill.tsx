@@ -45,7 +45,7 @@ export default function Fill() {
     return (
       <div className="fill-shell center success">
         {langToggle}
-        <div className="success-check" aria-hidden="true">✓</div>
+        <div className="stamp" aria-hidden="true">{t("received", lang)}</div>
         <h1>{t("successTitle", lang)}</h1>
         <p>{t("successBody", lang)}</p>
         <div className="qr-box viewfinder">

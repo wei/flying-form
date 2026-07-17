@@ -12,6 +12,7 @@ const STRINGS = {
   step: { en: "Step", ja: "ステップ" },
   of: { en: "of", ja: "/" },
   successTitle: { en: "Submitted!", ja: "送信完了！" },
+  received: { en: "RECEIVED", ja: "受付済" },
   successBody: {
     en: "Show this QR code at the front desk.",
     ja: "受付でこのQRコードをご提示ください。",

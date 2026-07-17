@@ -1,18 +1,27 @@
-@import "@fontsource-variable/inter";
+@import "@fontsource/ibm-plex-sans-jp/400.css";
+@import "@fontsource/ibm-plex-sans-jp/500.css";
+@import "@fontsource/ibm-plex-sans-jp/600.css";
+@import "@fontsource/ibm-plex-sans-jp/700.css";
+@import "@fontsource/shippori-mincho/600.css";
+@import "@fontsource/shippori-mincho/700.css";
+@import "@fontsource/ibm-plex-mono/400.css";
 
 :root {
-  /* ----- OKLCH palette: restrained enterprise cobalt ----- */
-  --bg: oklch(1 0 0);
-  --surface: oklch(0.98 0.003 250);
-  --panel: oklch(0.96 0.004 250);
-  --ink: oklch(0.18 0.02 250);
-  --muted: oklch(0.42 0.03 250);
+  /* ----- 藍 × 朱 × 墨: aizome indigo, shu vermilion, sumi ink ----- */
+  --bg: oklch(0.972 0.005 265);          /* faint indigo wash, not cream */
+  --surface: oklch(0.99 0.002 265);
+  --panel: oklch(0.945 0.008 265);
+  --ink: oklch(0.23 0.018 270);          /* sumi */
+  --muted: oklch(0.44 0.025 268);
 
-  --primary: oklch(0.45 0.09 250);
-  --primary-hover: oklch(0.40 0.10 250);
-  --primary-active: oklch(0.36 0.10 250);
-  --primary-subtle: oklch(0.95 0.03 250);
+  --primary: oklch(0.40 0.10 268);       /* aizome */
+  --primary-hover: oklch(0.35 0.105 268);
+  --primary-active: oklch(0.31 0.10 268);
+  --primary-subtle: oklch(0.94 0.025 268);
   --primary-ink: oklch(1 0 0);
+
+  --stamp: oklch(0.55 0.19 30);          /* shu — receipt stamp, required marks */
+  --stamp-subtle: oklch(0.95 0.025 30);
 
   --accent: oklch(0.55 0.10 170);
   --accent-subtle: oklch(0.95 0.02 170);
@@ -22,11 +31,15 @@
   --success-subtle: oklch(0.95 0.02 145);
   --warning: oklch(0.80 0.14 85);
   --warning-subtle: oklch(0.97 0.02 85);
-  --danger: oklch(0.52 0.18 25);
-  --danger-subtle: oklch(0.95 0.03 25);
+  --danger: oklch(0.50 0.18 27);
+  --danger-subtle: oklch(0.95 0.03 27);
 
-  --border: oklch(0.88 0.01 250);
-  --border-strong: oklch(0.78 0.02 250);
+  --border: oklch(0.885 0.012 265);
+  --border-strong: oklch(0.78 0.02 265);
+
+  --font-ui: "IBM Plex Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --font-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.05);
   --shadow: 0 1px 3px oklch(0 0 0 / 0.08), 0 1px 2px oklch(0 0 0 / 0.04);
@@ -56,7 +69,7 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
 
-  font-family: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif;
+  font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.5;
   color: var(--ink);
@@ -74,7 +87,13 @@ body {
 }
 
 h1, h2, h3, h4, p { margin: 0; }
-h1 { font-size: var(--text-2xl); font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; }
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
 h2 { font-size: var(--text-xl); font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
 h3 { font-size: var(--text-lg); font-weight: 600; line-height: 1.35; }
 
@@ -111,11 +130,11 @@ a:hover { text-decoration: underline; }
 .btn.primary:active:not(:disabled) { background: var(--primary-active); }
 
 .btn.secondary {
-  background: var(--bg);
+  background: var(--surface);
   color: var(--ink);
   border-color: var(--border);
 }
-.btn.secondary:hover:not(:disabled) { background: var(--surface); border-color: var(--border-strong); }
+.btn.secondary:hover:not(:disabled) { background: var(--panel); border-color: var(--border-strong); }
 .btn.secondary:active:not(:disabled) { background: var(--panel); }
 
 .btn.ghost {
@@ -123,7 +142,7 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   border-color: transparent;
 }
-.btn.ghost:hover:not(:disabled) { color: var(--ink); background: var(--surface); }
+.btn.ghost:hover:not(:disabled) { color: var(--ink); background: var(--panel); }
 
 .btn.danger {
   background: var(--danger);
@@ -142,7 +161,8 @@ a:hover { text-decoration: underline; }
   margin-bottom: var(--space-2);
   color: var(--ink);
 }
-.req { color: var(--danger); font-weight: 500; margin-left: 0.15rem; }
+/* required marks are red on real Japanese forms — shu, not danger */
+.req { color: var(--stamp); font-weight: 500; margin-left: 0.15rem; }
 
 .field input,
 .field select,
@@ -153,7 +173,7 @@ a:hover { text-decoration: underline; }
   line-height: 1.4;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--ink);
   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
 }
@@ -172,7 +192,7 @@ a:hover { text-decoration: underline; }
 }
 .field input:disabled,
 .field select:disabled,
-.field textarea:disabled { background: var(--surface); opacity: 0.7; }
+.field textarea:disabled { background: var(--panel); opacity: 0.7; }
 
 .has-error input,
 .has-error select,
@@ -192,13 +212,13 @@ a:hover { text-decoration: underline; }
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
   transition: border-color 150ms ease-out, background-color 150ms ease-out;
 }
-.choice:hover { border-color: var(--border-strong); background: var(--surface); }
+.choice:hover { border-color: var(--border-strong); background: var(--panel); }
 .choice input {
   width: 1.1rem;
   height: 1.1rem;
@@ -228,12 +248,13 @@ a:hover { text-decoration: underline; }
   padding: var(--space-3) 0;
   margin-bottom: var(--space-6);
   border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--surface);
 }
 .admin-brand {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-lg);
   color: var(--ink);
@@ -258,7 +279,7 @@ a:hover { text-decoration: underline; }
   font-weight: 500;
   color: var(--muted);
 }
-.admin-nav a:hover { color: var(--ink); background: var(--surface); text-decoration: none; }
+.admin-nav a:hover { color: var(--ink); background: var(--panel); text-decoration: none; }
 .admin-nav a.active { color: var(--primary); background: var(--primary-subtle); }
 .admin-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
 
@@ -280,7 +301,7 @@ a:hover { text-decoration: underline; }
   gap: var(--space-4);
   align-items: flex-start;
   padding: var(--space-4);
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -297,7 +318,7 @@ a:hover { text-decoration: underline; }
 .form-card-qr {
   flex-shrink: 0;
   padding: var(--space-2);
-  background: var(--surface);
+  background: var(--panel);
   border-radius: var(--radius);
   border: 1px solid var(--border);
 }
@@ -363,7 +384,7 @@ a:hover { text-decoration: underline; }
   color: var(--muted);
   border: 1px dashed var(--border);
   border-radius: var(--radius-lg);
-  background: var(--surface);
+  background: var(--panel);
 }
 .empty-state h3 { color: var(--ink); }
 .empty-state p { max-width: 40ch; font-size: var(--text-sm); }
@@ -421,7 +442,7 @@ a:hover { text-decoration: underline; }
   padding: var(--space-8);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--surface);
+  background: var(--panel);
   cursor: pointer;
   transition: border-color 150ms ease-out, background-color 150ms ease-out;
   text-align: center;
@@ -443,7 +464,7 @@ a:hover { text-decoration: underline; }
   display: grid;
   place-items: center;
   border-radius: var(--radius-full);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--primary);
   font-size: 1.5rem;
   box-shadow: var(--shadow-sm);
@@ -472,7 +493,7 @@ a:hover { text-decoration: underline; }
 .preview-col { flex: 1; min-width: 320px; }
 .preview-toolbar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
 .preview {
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
@@ -497,9 +518,9 @@ a:hover { text-decoration: underline; }
 .preview li:last-child { border-bottom: none; }
 .pv-label { font-weight: 500; }
 .pv-type {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
-  background: var(--surface);
+  background: var(--panel);
   color: var(--muted);
   padding: 0.15rem 0.4rem;
   border-radius: var(--radius-sm);
@@ -533,11 +554,11 @@ a:hover { text-decoration: underline; }
 .qr-trigger:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .qr-share { align-items: center; text-align: center; }
-.qr-share h2 { text-wrap: balance; }
+.qr-share h2 { text-wrap: balance; font-family: var(--font-display); font-weight: 700; }
 .qr-share .jp { margin-top: calc(-1 * var(--space-2)); }
 .qr-share-big { padding: var(--space-5); margin: var(--space-2) 0; }
 .qr-share-url {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--muted);
   word-break: break-all;
@@ -549,7 +570,7 @@ a:hover { text-decoration: underline; }
 .qr-box {
   display: inline-flex;
   padding: var(--space-3);
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -563,7 +584,7 @@ a:hover { text-decoration: underline; }
   flex-shrink: 0;
   text-align: center;
   padding: var(--space-5);
-  background: var(--surface);
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
@@ -578,7 +599,7 @@ a:hover { text-decoration: underline; }
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -591,7 +612,7 @@ a:hover { text-decoration: underline; }
   vertical-align: middle;
 }
 .subs-table th {
-  background: var(--surface);
+  background: var(--panel);
   font-weight: 600;
   color: var(--muted);
   font-size: var(--text-xs);
@@ -599,7 +620,7 @@ a:hover { text-decoration: underline; }
   letter-spacing: 0.04em;
 }
 .subs-table tbody tr { cursor: pointer; transition: background-color 100ms ease-out; }
-.subs-table tbody tr:hover { background: var(--surface); }
+.subs-table tbody tr:hover { background: var(--panel); }
 .subs-table tbody tr.selected { background: var(--primary-subtle); }
 .subs-table tbody tr.selected td { border-bottom-color: var(--primary-subtle); }
 .subs-table tbody tr:last-child td { border-bottom: none; }
@@ -627,7 +648,7 @@ dialog.modal-backdrop[open] {
 }
 dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
 .modal {
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   max-width: 520px;
@@ -664,7 +685,7 @@ dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
 
 .lang-toggle {
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius-full);
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-xs);
@@ -699,28 +720,39 @@ dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
   max-width: 520px;
   margin: 0 auto;
   padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
-  background: var(--bg);
+  background: var(--surface);
   border-top: 1px solid var(--border);
   box-shadow: 0 -2px 8px oklch(0 0 0 / 0.04);
 }
 .fill-footer .btn { flex: 1; }
 
 .success { text-align: center; padding-top: var(--space-8); }
-.success-check {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto var(--space-4);
-  border-radius: var(--radius-full);
-  background: var(--success);
-  color: oklch(1 0 0);
-  font-size: 2.25rem;
-  line-height: 72px;
-  font-weight: 600;
+/* receipt stamp — what happens to real paper at a real desk */
+.stamp {
+  display: grid;
+  place-items: center;
+  width: 116px;
+  height: 116px;
+  margin: 0 auto var(--space-5);
+  border: 3px solid var(--stamp);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px var(--surface), inset 0 0 0 5px var(--stamp);
+  color: var(--stamp);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: 0.08em;
+  transform: rotate(-6deg);
+  animation: stamp-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes stamp-in {
+  from { transform: rotate(-6deg) scale(1.6); opacity: 0; }
+  to { transform: rotate(-6deg) scale(1); opacity: 1; }
 }
 .success h1 { margin-bottom: var(--space-2); }
 .success p { color: var(--muted); margin-bottom: var(--space-6); }
 .success .qr-box { margin-bottom: var(--space-4); }
-.sub-ref { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: var(--text-sm); }
+.sub-ref { color: var(--muted); font-family: var(--font-mono); font-size: var(--text-sm); }
 .fill-shell.center .lang-toggle { position: absolute; top: var(--space-4); right: var(--space-4); }
 
 /* ---------- Utilities ---------- */
@@ -741,7 +773,7 @@ dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--surface) 25%, var(--panel) 50%, var(--surface) 75%);
+  background: linear-gradient(90deg, var(--panel) 25%, var(--panel) 50%, var(--panel) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius);
@@ -750,7 +782,8 @@ dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
 
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation-duration: 1.6s; }
-  .skeleton { animation: none; background: var(--surface); }
+  .skeleton { animation: none; background: var(--panel); }
+  .stamp { animation: none; }
   .progress-bar { transition: none; }
   .btn, .field input, .field select, .field textarea, .choice, .form-card, .dropzone, .lang-toggle {
     transition: none;

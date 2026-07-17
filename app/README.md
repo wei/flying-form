@@ -1,32 +1,23 @@
-# React + TypeScript + Vite
+# Flying Form — app
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The Vite + React 19 single-page app that is the whole product. See the [root README](../README.md) for what Flying Form is, how it works, and the demo flow.
 
-Currently, two official plugins are available:
+## Scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev        # dev server at http://localhost:5173
+npm run build      # tsc -b && vite build
+npm run lint       # oxlint
+npm run preview    # serve the production build locally
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+`/api/kimi` is proxied to the deployed ai& Cloud Function in dev (see `vite.config.ts`) and rewritten to it in production (see `firebase.json`). Firebase web config comes from `.env` (`VITE_FB_*`).
+
+## Layout
+
+- `src/pages` — `Admin`, `AdminNew`, `AdminFormDetail`, `Fill`
+- `src/components` — `AdminShell`, `FormPreview`, `FieldInput`, `ShareQR`, `ScanModal`
+- `src/lib` — `kimi.ts` (ai& calls), `types.ts` (schema + Zod validation), `fb.ts` (Firestore), `lang.tsx` / `i18n.ts` (EN/JA)
+- `functions/index.js` — the ai& proxy Cloud Function
+</content>
