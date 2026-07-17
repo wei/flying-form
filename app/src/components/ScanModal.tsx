@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import { useLang } from "../lib/lang";
+import { t } from "../lib/i18n";
 
 interface Props {
   onResult: (text: string) => void;
@@ -8,6 +10,7 @@ interface Props {
 
 /** Camera QR scanner rendered in a native dialog. */
 export default function ScanModal({ onResult, onClose }: Props) {
+  const { lang } = useLang();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const doneRef = useRef(false);
@@ -62,13 +65,13 @@ export default function ScanModal({ onResult, onClose }: Props) {
       onClose={onClose}
     >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Scan success QR</h2>
+        <h2>{t("scanQr", lang)}</h2>
         <div className="viewfinder" style={{ width: 320 }}>
           <span className="vf" aria-hidden="true" />
           <div id="qr-reader" style={{ width: 320 }} />
         </div>
         <button className="btn secondary" onClick={onClose}>
-          Cancel
+          {t("cancel", lang)}
         </button>
       </div>
     </dialog>

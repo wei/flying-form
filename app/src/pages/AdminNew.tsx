@@ -6,6 +6,8 @@ import type { FormSchema, Lang } from "../lib/types";
 import FormPreview from "../components/FormPreview";
 import ShareQR from "../components/ShareQR";
 import AdminShell from "../components/AdminShell";
+import { useLang } from "../lib/lang";
+import { t } from "../lib/i18n";
 
 type Stage =
   | { s: "pick" }
@@ -28,8 +30,9 @@ async function fileToDataUrl(file: File, maxDim = 1600): Promise<string> {
 
 export default function AdminNew() {
   const [stage, setStage] = useState<Stage>({ s: "pick" });
-  const [lang, setLang] = useState<Lang>("en");
+  const [previewLang, setPreviewLang] = useState<Lang>("en");
   const nav = useNavigate();
+  const { lang } = useLang();
 
   const onFile = async (file: File | undefined) => {
     if (!file) return;
@@ -59,13 +62,10 @@ export default function AdminNew() {
       : stage.s === "preview" || stage.s === "publishing"
         ? 1
         : 2;
-  const STAGES = ["Upload", "Review", "Live"];
+  const STAGES = [t("stUpload", lang), t("stReview", lang), t("stLive", lang)];
 
   return (
-    <AdminShell
-      title="New form"
-      subtitle="Upload a paper form and Kimi will build the digital version."
-    >
+    <AdminShell title={t("newTitle", lang)} subtitle={t("newSubtitle", lang)}>
       <ol className="stages" aria-label="Create form progress">
         {STAGES.map((name, i) => (
           <li
@@ -93,8 +93,8 @@ export default function AdminNew() {
             onChange={(e) => onFile(e.target.files?.[0])}
           />
           <span className="dz-icon" aria-hidden="true">📷</span>
-          <span className="dz-title">Photograph or upload a paper form</span>
-          <span className="dz-hint">JPEG or PNG · flat lighting helps accuracy</span>
+          <span className="dz-title">{t("dzTitle", lang)}</span>
+          <span className="dz-hint">{t("dzHint", lang)}</span>
         </label>
       )}
 
@@ -103,7 +103,7 @@ export default function AdminNew() {
           <img src={stage.img} className="gen-thumb" alt="paper form" />
           <div className="gen-status">
             <div className="spinner" />
-            <p>Kimi K2.7 is reading the form…</p>
+            <p>{t("generating", lang)}</p>
           </div>
         </div>
       )}
@@ -113,14 +113,17 @@ export default function AdminNew() {
           <img src={stage.img} className="gen-thumb" alt="paper form" />
           <div className="preview-col">
             <div className="preview-toolbar">
-              <button className="lang-toggle" onClick={() => setLang(lang === "ja" ? "en" : "ja")}>
-                {lang === "ja" ? "English" : "日本語"}
+              <button
+                className="lang-toggle"
+                onClick={() => setPreviewLang(previewLang === "ja" ? "en" : "ja")}
+              >
+                {previewLang === "ja" ? "English" : "日本語"}
               </button>
               <button className="btn primary" onClick={() => onPublish(stage.schema)}>
-                Publish form
+                {t("publishBtn", lang)}
               </button>
             </div>
-            <FormPreview schema={stage.schema} lang={lang} />
+            <FormPreview schema={stage.schema} lang={previewLang} />
           </div>
         </div>
       )}
@@ -128,13 +131,13 @@ export default function AdminNew() {
       {stage.s === "publishing" && (
         <div className="gen-status center">
           <div className="spinner" />
-          <p>Publishing form…</p>
+          <p>{t("publishing", lang)}</p>
         </div>
       )}
 
       {stage.s === "published" && (
         <div className="published">
-          <h2>Form is live</h2>
+          <h2>{t("liveTitle", lang)}</h2>
           <div className="qr-box viewfinder">
             <span className="vf" aria-hidden="true" />
             <ShareQR
@@ -151,10 +154,10 @@ export default function AdminNew() {
           </p>
           <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
             <button className="btn secondary" onClick={() => nav("/admin")}>
-              Back to forms
+              {t("backToForms", lang)}
             </button>
             <button className="btn primary" onClick={() => nav(`/admin/form/${stage.formId}`)}>
-              Open dashboard
+              {t("openDashboard", lang)}
             </button>
           </div>
         </div>
@@ -164,7 +167,7 @@ export default function AdminNew() {
         <div className="center">
           <p className="error">{stage.msg}</p>
           <button className="btn primary" onClick={() => setStage({ s: "pick" })}>
-            Try again
+            {t("tryAgain", lang)}
           </button>
         </div>
       )}

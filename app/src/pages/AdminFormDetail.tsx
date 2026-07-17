@@ -5,14 +5,16 @@ import ShareQR from "../components/ShareQR";
 import type { FormField, StoredForm, Submission } from "../lib/types";
 import ScanModal from "../components/ScanModal";
 import AdminShell from "../components/AdminShell";
+import { useLang } from "../lib/lang";
+import { t } from "../lib/i18n";
+import type { Lang } from "../lib/types";
 
-function display(field: FormField | undefined, v: string | string[]): string {
-  if (Array.isArray(v)) {
-    return v
-      .map((x) => field?.options?.find((o) => o.value === x)?.label_en ?? x)
-      .join(", ");
-  }
-  return field?.options?.find((o) => o.value === v)?.label_en ?? v;
+function display(field: FormField | undefined, v: string | string[], lang: Lang): string {
+  const opt = (x: string) => {
+    const o = field?.options?.find((o) => o.value === x);
+    return o ? (lang === "ja" ? o.label_ja : o.label_en) : x;
+  };
+  return Array.isArray(v) ? v.map(opt).join(", ") : opt(v);
 }
 
 export default function AdminFormDetail() {
@@ -21,6 +23,7 @@ export default function AdminFormDetail() {
   const [subs, setSubs] = useState<Submission[]>([]);
   const [scanning, setScanning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { lang } = useLang();
   const nav = useNavigate();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -47,20 +50,22 @@ export default function AdminFormDetail() {
 
   if (form === undefined) {
     return (
-      <AdminShell title="Loading…">
+      <AdminShell title={t("loading", lang)}>
         <div className="gen-status">
           <div className="spinner" />
-          <p>Loading form…</p>
+          <p>{t("loadingForm", lang)}</p>
         </div>
       </AdminShell>
     );
   }
   if (form === null) {
     return (
-      <AdminShell title="Form not found">
+      <AdminShell title={t("notFound", lang)}>
         <div className="center">
-          <p className="error">This form does not exist.</p>
-          <button className="btn primary" onClick={() => nav("/admin")}>Back to forms</button>
+          <p className="error">{t("formNotExist", lang)}</p>
+          <button className="btn primary" onClick={() => nav("/admin")}>
+            {t("backToForms", lang)}
+          </button>
         </div>
       </AdminShell>
     );
@@ -79,11 +84,11 @@ export default function AdminFormDetail() {
 
   return (
     <AdminShell
-      title={form.schema.title_en}
-      subtitle={form.schema.title_ja}
+      title={lang === "ja" ? form.schema.title_ja : form.schema.title_en}
+      subtitle={lang === "ja" ? form.schema.title_en : form.schema.title_ja}
       actions={
         <button className="btn secondary" onClick={() => setScanning(true)}>
-          Scan success QR
+          {t("scanQr", lang)}
         </button>
       }
     >
@@ -100,7 +105,7 @@ export default function AdminFormDetail() {
           </div>
           <div className="side-actions">
             <a className="btn secondary" href={`/f/${form.id}`} target="_blank" rel="noreferrer">
-              Open form
+              {t("openForm", lang)}
             </a>
             <button
               className="btn secondary"
@@ -110,10 +115,13 @@ export default function AdminFormDetail() {
                 setTimeout(() => setCopied(false), 1500);
               }}
             >
-              {copied ? "Copied" : "Copy link"}
+              {copied ? t("copied", lang) : t("copyLink", lang)}
             </button>
           </div>
-          <p className="meta">{subs.length} {subs.length === 1 ? "submission" : "submissions"}</p>
+          <p className="meta">
+            {subs.length}{" "}
+            {t(subs.length === 1 ? "submissionOne" : "submissionMany", lang)}
+          </p>
         </aside>
 
         <div className="detail-main">
@@ -121,9 +129,9 @@ export default function AdminFormDetail() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Time</th>
+                <th>{t("thTime", lang)}</th>
                 {fieldList.slice(0, 4).map((f) => (
-                  <th key={f.id}>{f.label_en}</th>
+                  <th key={f.id}>{lang === "ja" ? f.label_ja : f.label_en}</th>
                 ))}
               </tr>
             </thead>
@@ -135,16 +143,16 @@ export default function AdminFormDetail() {
                   onClick={() => nav(`/admin/form/${form.id}/sub/${s.id}`)}
                 >
                   <td>{s.id.slice(0, 6)}</td>
-                  <td>{new Date(s.createdAt).toLocaleTimeString()}</td>
+                  <td>{new Date(s.createdAt).toLocaleTimeString(lang === "ja" ? "ja-JP" : "en-US")}</td>
                   {fieldList.slice(0, 4).map((f) => (
-                    <td key={f.id}>{display(f, s.values[f.id] ?? "")}</td>
+                    <td key={f.id}>{display(f, s.values[f.id] ?? "", lang)}</td>
                   ))}
                 </tr>
               ))}
               {subs.length === 0 && (
                 <tr>
                   <td colSpan={6} className="empty">
-                    No submissions yet.
+                    {t("noSubs", lang)}
                   </td>
                 </tr>
               )}
@@ -163,19 +171,23 @@ export default function AdminFormDetail() {
           <div className="modal submission-view" onClick={(e) => e.stopPropagation()}>
             <div className="close-row">
               <button className="btn ghost" onClick={() => nav(`/admin/form/${form.id}`)}>
-                ✕ Close
+                ✕ {t("close", lang)}
               </button>
             </div>
-            <h2>Submission #{selected.id.slice(0, 6)}</h2>
-            <p className="meta">{new Date(selected.createdAt).toLocaleString()}</p>
+            <h2>
+              {t("submission", lang)} #{selected.id.slice(0, 6)}
+            </h2>
+            <p className="meta">
+              {new Date(selected.createdAt).toLocaleString(lang === "ja" ? "ja-JP" : "en-US")}
+            </p>
             <dl>
               {fieldList.map((f) => (
                 <div key={f.id} className="sub-row">
                   <dt>
-                    {f.label_en}
-                    <span className="jp">{f.label_ja}</span>
+                    {lang === "ja" ? f.label_ja : f.label_en}
+                    <span className="jp">{lang === "ja" ? f.label_en : f.label_ja}</span>
                   </dt>
-                  <dd>{display(f, selected.values[f.id] ?? "") || "—"}</dd>
+                  <dd>{display(f, selected.values[f.id] ?? "", lang) || "—"}</dd>
                 </div>
               ))}
             </dl>

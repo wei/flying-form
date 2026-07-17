@@ -1,4 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
+import { useLang } from "../lib/lang";
+import { t } from "../lib/i18n";
 
 interface Props {
   title?: string;
@@ -9,6 +11,7 @@ interface Props {
 
 export default function AdminShell({ title, subtitle, actions, children }: Props) {
   const { pathname } = useLocation();
+  const { lang, toggle } = useLang();
   return (
     <div className="admin-shell">
       <header className="admin-topbar">
@@ -20,13 +23,18 @@ export default function AdminShell({ title, subtitle, actions, children }: Props
             <span>Flying Form</span>
           </Link>
           <Link to="/admin" className={pathname === "/admin" ? "active" : ""}>
-            Forms
+            {t("navForms", lang)}
           </Link>
           <Link to="/admin/new" className={pathname === "/admin/new" ? "active" : ""}>
-            New form
+            {t("navNew", lang)}
           </Link>
         </div>
-        <div className="admin-actions">{actions}</div>
+        <div className="admin-actions">
+          {actions}
+          <button className="lang-toggle" onClick={toggle} aria-label="Switch language">
+            {lang === "ja" ? "English" : "日本語"}
+          </button>
+        </div>
       </header>
 
       {(title || subtitle) && (

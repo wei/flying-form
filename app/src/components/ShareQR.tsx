@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useLang } from "../lib/lang";
+import { t } from "../lib/i18n";
 
 interface Props {
   url: string;
@@ -12,6 +14,7 @@ interface Props {
 export default function ShareQR({ url, title, subtitle, size }: Props) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { lang } = useLang();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -59,13 +62,16 @@ export default function ShareQR({ url, title, subtitle, size }: Props) {
                 setTimeout(() => setCopied(false), 1500);
               }}
             >
-              {copied ? "Copied" : "Copy link"}
+              {copied ? t("copied", lang) : t("copyLink", lang)}
             </button>
-            <a className="btn secondary" href={url} target="_blank" rel="noreferrer">
-              Open link
-            </a>
+            <button
+              className="btn secondary"
+              onClick={() => window.open(url, "_blank", "noopener")}
+            >
+              {t("openLink", lang)}
+            </button>
             <button className="btn primary" onClick={() => setOpen(false)}>
-              Done
+              {t("done", lang)}
             </button>
           </div>
         </div>

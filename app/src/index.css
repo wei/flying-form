@@ -543,8 +543,7 @@ a:hover { text-decoration: underline; }
   word-break: break-all;
   max-width: 40ch;
 }
-.qr-share-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: center; }
-.qr-share-actions a:hover { text-decoration: none; }
+.qr-share-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; justify-content: center; }
 
 /* ---------- QR ---------- */
 .qr-box {

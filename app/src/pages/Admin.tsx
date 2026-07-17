@@ -5,12 +5,15 @@ import type { StoredForm } from "../lib/types";
 import ScanModal from "../components/ScanModal";
 import ShareQR from "../components/ShareQR";
 import AdminShell from "../components/AdminShell";
+import { useLang } from "../lib/lang";
+import { t } from "../lib/i18n";
 
 export default function Admin() {
   const [forms, setForms] = useState<StoredForm[] | undefined>(undefined);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [scanning, setScanning] = useState(false);
   const nav = useNavigate();
+  const { lang } = useLang();
 
   useEffect(() => watchForms(setForms), []);
 
@@ -34,15 +37,15 @@ export default function Admin() {
 
   return (
     <AdminShell
-      title="Forms"
-      subtitle="Digitize paper forms and review submissions."
+      title={t("formsTitle", lang)}
+      subtitle={t("formsSubtitle", lang)}
       actions={
         <>
           <button className="btn secondary" onClick={() => setScanning(true)}>
-            Scan success QR
+            {t("scanQr", lang)}
           </button>
           <button className="btn primary" onClick={() => nav("/admin/new")}>
-            + New form
+            {t("newFormBtn", lang)}
           </button>
         </>
       }
@@ -57,11 +60,11 @@ export default function Admin() {
         <div className="empty-state">
           <div className="empty-icon" aria-hidden="true">📄</div>
           <div>
-            <h3>No forms yet</h3>
-            <p>Photograph or upload a paper form to create your first digital form.</p>
+            <h3>{t("emptyTitle", lang)}</h3>
+            <p>{t("emptyBody", lang)}</p>
           </div>
           <button className="btn primary btn-lg" onClick={() => nav("/admin/new")}>
-            Create a form
+            {t("createForm", lang)}
           </button>
         </div>
       ) : (
@@ -70,11 +73,11 @@ export default function Admin() {
             <thead>
               <tr>
                 <th className="col-qr">QR</th>
-                <th>Form</th>
-                <th className="num">Sections</th>
-                <th className="num">Fields</th>
-                <th className="num">Submissions</th>
-                <th>Created</th>
+                <th>{t("thForm", lang)}</th>
+                <th className="num">{t("thSections", lang)}</th>
+                <th className="num">{t("thFields", lang)}</th>
+                <th className="num">{t("thSubmissions", lang)}</th>
+                <th>{t("thCreated", lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -100,14 +103,18 @@ export default function Admin() {
                       />
                     </td>
                     <td>
-                      <span className="cell-title">{f.schema.title_en}</span>
-                      <span className="cell-sub">{f.schema.title_ja}</span>
+                      <span className="cell-title">
+                        {lang === "ja" ? f.schema.title_ja : f.schema.title_en}
+                      </span>
+                      <span className="cell-sub">
+                        {lang === "ja" ? f.schema.title_en : f.schema.title_ja}
+                      </span>
                     </td>
                     <td className="num">{f.schema.sections.length}</td>
                     <td className="num">{fieldCount}</td>
                     <td className="num">{counts[f.id] ?? "–"}</td>
                     <td className="muted-cell">
-                      {new Date(f.createdAt).toLocaleDateString(undefined, {
+                      {new Date(f.createdAt).toLocaleDateString(lang === "ja" ? "ja-JP" : "en-US", {
                         month: "short",
                         day: "numeric",
                         hour: "2-digit",

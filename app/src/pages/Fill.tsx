@@ -3,13 +3,14 @@ import { useParams } from "react-router-dom";
 import { getForm, submitValues } from "../lib/fb";
 import ShareQR from "../components/ShareQR";
 import { t } from "../lib/i18n";
-import type { FormValues, Lang, StoredForm } from "../lib/types";
+import type { FormValues, StoredForm } from "../lib/types";
 import FieldInput, { validateField } from "../components/FieldInput";
+import { useLang } from "../lib/lang";
 
 export default function Fill() {
   const { formId } = useParams<{ formId: string }>();
   const [form, setForm] = useState<StoredForm | null | undefined>(undefined);
-  const [lang, setLang] = useState<Lang>("ja");
+  const { lang, toggle } = useLang();
   const [step, setStep] = useState(0);
   const [values, setValues] = useState<FormValues>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,7 +33,7 @@ export default function Fill() {
   const langToggle = (
     <button
       className="lang-toggle"
-      onClick={() => setLang(lang === "ja" ? "en" : "ja")}
+      onClick={toggle}
       aria-label="Switch language"
     >
       {lang === "ja" ? "English" : "日本語"}
