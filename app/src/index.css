@@ -789,7 +789,9 @@ dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
-.home-plane { font-size: 2.5rem; color: var(--primary); }
+/* logo PNGs ship on white — multiply blends them into any light surface */
+.home-mark-img { width: 76px; height: 76px; object-fit: contain; mix-blend-mode: multiply; }
+.brand-logo { height: 44px; display: block; mix-blend-mode: multiply; }
 .home-title {
   font-size: clamp(1.9rem, 5vw, 3rem);
   max-width: 22ch;

@@ -14,10 +14,7 @@ export default function Home() {
   return (
     <div className="home">
       <header className="home-top">
-        <span className="admin-brand" aria-hidden="true">
-          <span className="admin-brand-mark">✈</span>
-          <span>Flying Form</span>
-        </span>
+        <img src="/horizontal-logo.png" alt="Flying Form" className="brand-logo" />
         <button className="lang-toggle" onClick={toggle} aria-label="Switch language">
           {lang === "ja" ? "English" : "日本語"}
         </button>
@@ -26,7 +23,7 @@ export default function Home() {
       <main className="home-hero">
         <div className="home-mark viewfinder">
           <span className="vf" aria-hidden="true" />
-          <span className="home-plane" aria-hidden="true">✈</span>
+          <img src="/favicon.png" alt="" className="home-mark-img" aria-hidden="true" />
         </div>
         <h1 className="home-title">{t("heroTitle", lang)}</h1>
         <p className="home-sub">{t("heroSub", lang)}</p>

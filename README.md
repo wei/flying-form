@@ -1,8 +1,6 @@
 <div align="center">
 
-<img src="app/src/assets/hero.png" alt="Flying Form" width="140" />
-
-# Flying Form
+<img src="app/public/horizontal-logo.png" alt="Flying Form" width="420" />
 
 **Photograph a paper form; get a working, validated, bilingual mobile form in seconds.**
 
