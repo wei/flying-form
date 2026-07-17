@@ -130,42 +130,44 @@ flying-form/
 | Store | Cloud Firestore (forms + per-form submission subcollections, live listeners) |
 | Proxy | Firebase Cloud Function in `asia-northeast1` |
 | QR | `qrcode.react` for generation, `html5-qrcode` for scanning |
-| Type | Inter Variable |
+| Type | IBM Plex Sans JP, Shippori Mincho, IBM Plex Mono |
 
-## Status: what is built
+## Status
 
-**Done (P0 — the full round trip works end to end):**
+**✅ Shipped (P0)** — the full round trip works end to end:
 
 - Photo → Kimi vision → validated schema, retried on bad output
 - Publish → form URL + QR, with a read-only preview before publishing
 - Phone-first grouped wizard: one screen per section, progress bar, back/next, per-section required-field validation
 - English/Japanese toggle across the whole fill flow
 - Submit → success QR
-- Operator scans the success QR on the dashboard → that submission opens
+- Operator scans the success QR on the dashboard and that submission opens
 - Live submissions table with per-form counts
 
-**Scaffolded, not wired into the UI:**
+**🚧 Scaffolded, not wired into the UI:**
 
-- Photo prefill (`prefillValues` in [`kimi.ts`](./app/src/lib/kimi.ts)) — photograph a filled paper copy and map values by field id. The call exists; no screen invokes it yet.
+- Photo prefill (`prefillValues` in [`kimi.ts`](./app/src/lib/kimi.ts)): photograph a filled paper copy and map values by field id. The call exists; no screen invokes it yet.
 
-**Not built (design-compatible, parked):** conversational fill, voice fill, WebMCP actuation, pre-submit completeness checks. See the [PRD](./flying-form-prd.md) for the full P1/P2 breakdown.
+**⏸️ Parked (design-compatible, not built):** conversational fill, voice fill, WebMCP actuation, pre-submit completeness checks. See the [PRD](./flying-form-prd.md) for the full P1/P2 breakdown.
 
-## Demo-scope and security notes
+## Demo scope & security
 
-This is a hackathon prototype. The following are deliberate scoping decisions, not oversights:
+> [!WARNING]
+> This is a hackathon prototype. Do not run it as-is with real personal data until auth, secrets management, and Firestore rules are hardened. The items below are deliberate scoping decisions, not oversights.
 
-- **No authentication.** Every route, including the dashboard, is public. Anyone with a URL or QR can open it. Access control and tenancy are explicitly post-MVP.
-- **Demo API key.** The ai& key is committed inline in [`app/functions/index.js`](./app/functions/index.js) as a throwaway key scoped to the event. Rotate or revoke it before any real deployment; move it to a secret manager for production.
-- **Open Firestore rules.** [`app/firestore.rules`](./app/firestore.rules) allow open read/write until a hard expiry date — fine for a demo, unsafe for production.
-
-Do not run this as-is with real personal data until auth, secrets management, and Firestore rules are hardened.
+| Area | Decision |
+|:--|:--|
+| **Authentication** | None. Every route, including the dashboard, is public: anyone with a URL or QR can open it. Access control and tenancy are post-MVP. |
+| **API key** | The ai& key is committed inline in [`app/functions/index.js`](./app/functions/index.js) as a throwaway key scoped to the event. Rotate or revoke it before any real deployment and move it to a secret manager. |
+| **Firestore rules** | [`app/firestore.rules`](./app/firestore.rules) allow open read/write until a hard expiry date: fine for a demo, unsafe for production. |
 
 ## Design docs
 
-- [`PRODUCT.md`](./PRODUCT.md) — positioning, brand, and design principles
-- [`flying-form-prd.md`](./flying-form-prd.md) — full PRD: requirements, data schema, Kimi prompts, and the demo script
+- [`PRODUCT.md`](./PRODUCT.md): positioning, brand, and design principles
+- [`flying-form-prd.md`](./flying-form-prd.md): full PRD, including requirements, data schema, Kimi prompts, and the demo script
 
-## License
+<div align="center">
 
-[MIT](./LICENSE) © 2026 Wei He
-</content>
+**[MIT](./LICENSE)** © 2026 Wei He &nbsp;·&nbsp; Built on [Kimi K2.7](https://www.moonshot.ai) via [ai&](https://www.aiand.com)
+
+</div>
