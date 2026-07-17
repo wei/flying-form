@@ -28,19 +28,21 @@ export default function AdminFormDetail() {
   }, [formId]);
   useEffect(() => (formId ? watchSubmissions(formId, setSubs) : undefined), [formId]);
 
-  useEffect(() => {
-    if (subId) {
-      dialogRef.current?.showModal();
-    } else {
-      dialogRef.current?.close();
-    }
-  }, [subId]);
-
   const fields = useMemo(() => {
     const map = new Map<string, FormField>();
     form?.schema.sections.forEach((s) => s.fields.forEach((f) => map.set(f.id, f)));
     return map;
   }, [form]);
+
+  const selected = subId && form?.id ? subs.find((s) => s.id === subId) : undefined;
+
+  useEffect(() => {
+    if (selected) {
+      dialogRef.current?.showModal();
+    } else {
+      dialogRef.current?.close();
+    }
+  }, [selected]);
 
   if (form === undefined) {
     return (
@@ -64,7 +66,6 @@ export default function AdminFormDetail() {
   }
 
   const fieldList = [...fields.values()];
-  const selected = subId ? subs.find((s) => s.id === subId) : undefined;
 
   const onScan = (text: string) => {
     setScanning(false);
@@ -133,13 +134,14 @@ export default function AdminFormDetail() {
         </div>
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="modal-backdrop"
-        onClick={() => nav(`/admin/form/${form.id}`)}
-        onClose={() => nav(`/admin/form/${form.id}`)}
-      >
-        {selected && (
+      {selected && (
+        <dialog
+          ref={dialogRef}
+          className="modal-backdrop"
+          onClick={() => nav(`/admin/form/${form.id}`)}
+          onClose={() => nav(`/admin/form/${form.id}`)}
+          open
+        >
           <div className="modal submission-view" onClick={(e) => e.stopPropagation()}>
             <div className="close-row">
               <button className="btn ghost" onClick={() => nav(`/admin/form/${form.id}`)}>
@@ -160,8 +162,8 @@ export default function AdminFormDetail() {
               ))}
             </dl>
           </div>
-        )}
-      </dialog>
+        </dialog>
+      )}
 
       {scanning && <ScanModal onResult={onScan} onClose={() => setScanning(false)} />}
     </AdminShell>
