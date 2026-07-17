@@ -17,6 +17,7 @@ export default function AdminShell({ title, subtitle, actions, children }: Props
       <header className="admin-topbar">
         <div className="admin-nav">
           <Link to="/" className="admin-brand" aria-label="Flying Form home">
+            <img src="/favicon.png" alt="" className="brand-icon" aria-hidden="true" />
             <img src="/horizontal-logo.png" alt="Flying Form" className="brand-logo" />
           </Link>
           <Link to="/admin" className={pathname === "/admin" ? "active" : ""}>

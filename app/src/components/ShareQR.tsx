@@ -10,6 +10,14 @@ interface Props {
   size: number;
 }
 
+/** Center-logo settings; high error correction keeps the code scannable. */
+const logoSettings = (size: number) => ({
+  src: "/favicon.png",
+  height: Math.round(size * 0.2),
+  width: Math.round(size * 0.2),
+  excavate: true,
+});
+
 /** QR tile that opens a large share dialog: title on top, big QR, link actions. */
 export default function ShareQR({ url, title, subtitle, size }: Props) {
   const [open, setOpen] = useState(false);
@@ -33,7 +41,7 @@ export default function ShareQR({ url, title, subtitle, size }: Props) {
           setOpen(true);
         }}
       >
-        <QRCodeSVG value={url} size={size} />
+        <QRCodeSVG value={url} size={size} level="H" imageSettings={logoSettings(size)} />
       </button>
 
       <dialog
@@ -50,7 +58,7 @@ export default function ShareQR({ url, title, subtitle, size }: Props) {
           {subtitle && <p className="jp">{subtitle}</p>}
           <div className="qr-box viewfinder qr-share-big">
             <span className="vf" aria-hidden="true" />
-            <QRCodeSVG value={url} size={300} />
+            <QRCodeSVG value={url} size={300} level="H" imageSettings={logoSettings(300)} />
           </div>
           <p className="qr-share-url">{url}</p>
           <div className="qr-share-actions">

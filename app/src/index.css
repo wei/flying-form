@@ -792,6 +792,8 @@ dialog.modal-backdrop::backdrop { background: oklch(0 0 0 / 0.45); }
 /* logo PNGs ship on white — multiply blends them into any light surface */
 .home-mark-img { width: 76px; height: 76px; object-fit: contain; mix-blend-mode: multiply; }
 .brand-logo { height: 44px; display: block; mix-blend-mode: multiply; }
+.brand-icon { width: 34px; height: 34px; object-fit: contain; mix-blend-mode: multiply; }
+.admin-brand { gap: var(--space-1); }
 .home-title {
   font-size: clamp(1.9rem, 5vw, 3rem);
   max-width: 22ch;
