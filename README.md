@@ -14,6 +14,8 @@ The visitor fills it on their phone by scanning a QR. The enterprise scans the v
 ![Firebase](https://img.shields.io/badge/Firebase-Hosting%20%2B%20Firestore-black)
 ![Model: Kimi K2.7 on ai&](https://img.shields.io/badge/Model-Kimi%20K2.7%20on%20ai%26-black)
 
+**[Live demo → flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)** &nbsp;·&nbsp; open `/admin` to create a form, `/f/:formId` to fill one
+
 Built for the **ai& × Moonshot Tokyo Hackathon Night** — Enterprise Workflow / AI Agent track.
 
 </div>
@@ -33,6 +35,8 @@ You point a phone at a paper form. Ten seconds later you have a real mobile form
 No field setup. No schema editor. One photo in, one working form out.
 
 ## Demo flow
+
+Try it live at **[flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)**.
 
 1. An operator shoots a paper form on the dashboard. Kimi reads it and a validated mobile form renders in about ten seconds. **This is the value beat.**
 2. A visitor scans the form QR on their own phone and fills the grouped wizard, flipping it to English mid-way.
