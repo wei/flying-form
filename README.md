@@ -4,7 +4,7 @@
 
 **Photograph a paper form; get a working, validated, bilingual mobile form in seconds.**
 
-The visitor fills it on their phone by scanning a QR. The enterprise scans the visitor's success QR back and the exact submission opens on the dashboard. Every model call runs on Kimi K2.7 via ai& inference, in Japan.
+The visitor scans a QR and fills it on their phone, with the right **form widget** per field on mobile — date picker, phone keypad, checkboxes, dropdowns. The enterprise scans the visitor's success QR back and the exact submission opens on the dashboard. Every model call runs on Kimi K2.7 via ai& inference, in Japan.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](./LICENSE)
 ![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
