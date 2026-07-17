@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   doc,
+  getCountFromServer,
   getDoc,
   getFirestore,
   onSnapshot,
@@ -48,6 +49,13 @@ export function watchForms(cb: (forms: StoredForm[]) => void): () => void {
       })),
     ),
   );
+}
+
+export async function countSubmissions(formId: string): Promise<number> {
+  const snap = await getCountFromServer(
+    collection(db, "forms", formId, "submissions"),
+  );
+  return snap.data().count;
 }
 
 export async function submitValues(

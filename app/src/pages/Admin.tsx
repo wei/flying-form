@@ -1,17 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { watchForms } from "../lib/fb";
+import { countSubmissions, watchForms } from "../lib/fb";
 import type { StoredForm } from "../lib/types";
 import ScanModal from "../components/ScanModal";
 import LinkedQR from "../components/LinkedQR";
 import AdminShell from "../components/AdminShell";
 
 export default function Admin() {
-  const [forms, setForms] = useState<StoredForm[]>([]);
+  const [forms, setForms] = useState<StoredForm[] | undefined>(undefined);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [scanning, setScanning] = useState(false);
   const nav = useNavigate();
 
   useEffect(() => watchForms(setForms), []);
+
+  useEffect(() => {
+    forms?.forEach((f) => {
+      countSubmissions(f.id)
+        .then((n) => setCounts((c) => ({ ...c, [f.id]: n })))
+        .catch(() => {});
+    });
+  }, [forms]);
 
   const onScan = (text: string) => {
     setScanning(false);
@@ -38,7 +47,13 @@ export default function Admin() {
         </>
       }
     >
-      {forms.length === 0 ? (
+      {forms === undefined ? (
+        <div className="table-skeleton" aria-hidden="true">
+          <div className="skeleton" style={{ height: 44 }} />
+          <div className="skeleton" style={{ height: 64 }} />
+          <div className="skeleton" style={{ height: 64 }} />
+        </div>
+      ) : forms.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon" aria-hidden="true">📄</div>
           <div>
@@ -50,29 +65,55 @@ export default function Admin() {
           </button>
         </div>
       ) : (
-        <div className="form-grid">
-          {forms.map((f) => (
-            <div
-              key={f.id}
-              className="form-card"
-              role="link"
-              tabIndex={0}
-              onClick={() => nav(`/admin/form/${f.id}`)}
-              onKeyDown={(e) => e.key === "Enter" && nav(`/admin/form/${f.id}`)}
-              aria-label={`${f.schema.title_en} form`}
-            >
-              <div className="form-card-qr">
-                <LinkedQR value={`${location.origin}/f/${f.id}`} size={72} />
-              </div>
-              <div className="form-card-body">
-                <h3>{f.schema.title_en}</h3>
-                <p className="jp">{f.schema.title_ja}</p>
-                <p className="meta">
-                  {f.schema.sections.length} sections · /f/{f.id}
-                </p>
-              </div>
-            </div>
-          ))}
+        <div className="table-wrap">
+          <table className="subs-table forms-table">
+            <thead>
+              <tr>
+                <th className="col-qr">QR</th>
+                <th>Form</th>
+                <th className="num">Sections</th>
+                <th className="num">Fields</th>
+                <th className="num">Submissions</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {forms.map((f) => {
+                const fieldCount = f.schema.sections.reduce(
+                  (n, s) => n + s.fields.length,
+                  0,
+                );
+                return (
+                  <tr
+                    key={f.id}
+                    tabIndex={0}
+                    onClick={() => nav(`/admin/form/${f.id}`)}
+                    onKeyDown={(e) => e.key === "Enter" && nav(`/admin/form/${f.id}`)}
+                    aria-label={`${f.schema.title_en} form`}
+                  >
+                    <td className="col-qr">
+                      <LinkedQR value={`${location.origin}/f/${f.id}`} size={44} />
+                    </td>
+                    <td>
+                      <span className="cell-title">{f.schema.title_en}</span>
+                      <span className="cell-sub">{f.schema.title_ja}</span>
+                    </td>
+                    <td className="num">{f.schema.sections.length}</td>
+                    <td className="num">{fieldCount}</td>
+                    <td className="num">{counts[f.id] ?? "–"}</td>
+                    <td className="muted-cell">
+                      {new Date(f.createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 

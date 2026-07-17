@@ -140,7 +140,6 @@ export default function AdminFormDetail() {
           className="modal-backdrop"
           onClick={() => nav(`/admin/form/${form.id}`)}
           onClose={() => nav(`/admin/form/${form.id}`)}
-          open
         >
           <div className="modal submission-view" onClick={(e) => e.stopPropagation()}>
             <div className="close-row">
