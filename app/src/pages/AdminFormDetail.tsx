@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getForm, watchSubmissions } from "../lib/fb";
-import LinkedQR from "../components/LinkedQR";
+import ShareQR from "../components/ShareQR";
 import type { FormField, StoredForm, Submission } from "../lib/types";
 import ScanModal from "../components/ScanModal";
 import AdminShell from "../components/AdminShell";
@@ -91,7 +91,12 @@ export default function AdminFormDetail() {
         <aside className="detail-side">
           <div className="qr-box viewfinder">
             <span className="vf" aria-hidden="true" />
-            <LinkedQR value={`${location.origin}/f/${form.id}`} size={160} />
+            <ShareQR
+              url={`${location.origin}/f/${form.id}`}
+              title={form.schema.title_en}
+              subtitle={form.schema.title_ja}
+              size={160}
+            />
           </div>
           <div className="side-actions">
             <a className="btn secondary" href={`/f/${form.id}`} target="_blank" rel="noreferrer">

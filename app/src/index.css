@@ -519,6 +519,33 @@ a:hover { text-decoration: underline; }
 .published h2 { margin-bottom: var(--space-4); }
 .published p { margin: var(--space-4) 0; color: var(--muted); font-size: var(--text-sm); }
 
+/* ---------- QR share modal ---------- */
+.qr-trigger {
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.qr-trigger:hover { opacity: 0.85; }
+.qr-trigger:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.qr-share { align-items: center; text-align: center; }
+.qr-share h2 { text-wrap: balance; }
+.qr-share .jp { margin-top: calc(-1 * var(--space-2)); }
+.qr-share-big { padding: var(--space-5); margin: var(--space-2) 0; }
+.qr-share-url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--text-xs);
+  color: var(--muted);
+  word-break: break-all;
+  max-width: 40ch;
+}
+.qr-share-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: center; }
+.qr-share-actions a:hover { text-decoration: none; }
+
 /* ---------- QR ---------- */
 .qr-box {
   display: inline-flex;

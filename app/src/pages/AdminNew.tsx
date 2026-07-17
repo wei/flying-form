@@ -4,7 +4,7 @@ import { generateSchema } from "../lib/kimi";
 import { publishForm } from "../lib/fb";
 import type { FormSchema, Lang } from "../lib/types";
 import FormPreview from "../components/FormPreview";
-import LinkedQR from "../components/LinkedQR";
+import ShareQR from "../components/ShareQR";
 import AdminShell from "../components/AdminShell";
 
 type Stage =
@@ -12,7 +12,7 @@ type Stage =
   | { s: "generating"; img: string }
   | { s: "preview"; img: string; schema: FormSchema }
   | { s: "publishing" }
-  | { s: "published"; formId: string }
+  | { s: "published"; formId: string; schema: FormSchema }
   | { s: "error"; msg: string };
 
 /** Downscale to keep the request small and fast. */
@@ -47,7 +47,7 @@ export default function AdminNew() {
     setStage({ s: "publishing" });
     try {
       const formId = await publishForm(schema);
-      setStage({ s: "published", formId });
+      setStage({ s: "published", formId, schema });
     } catch (err) {
       setStage({ s: "error", msg: String(err) });
     }
@@ -137,7 +137,12 @@ export default function AdminNew() {
           <h2>Form is live</h2>
           <div className="qr-box viewfinder">
             <span className="vf" aria-hidden="true" />
-            <LinkedQR value={`${location.origin}/f/${stage.formId}`} size={260} />
+            <ShareQR
+              url={`${location.origin}/f/${stage.formId}`}
+              title={stage.schema.title_en}
+              subtitle={stage.schema.title_ja}
+              size={260}
+            />
           </div>
           <p>
             <a href={`/f/${stage.formId}`} target="_blank" rel="noreferrer">

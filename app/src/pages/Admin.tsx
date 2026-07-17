@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { countSubmissions, watchForms } from "../lib/fb";
 import type { StoredForm } from "../lib/types";
 import ScanModal from "../components/ScanModal";
-import LinkedQR from "../components/LinkedQR";
+import ShareQR from "../components/ShareQR";
 import AdminShell from "../components/AdminShell";
 
 export default function Admin() {
@@ -92,7 +92,12 @@ export default function Admin() {
                     aria-label={`${f.schema.title_en} form`}
                   >
                     <td className="col-qr">
-                      <LinkedQR value={`${location.origin}/f/${f.id}`} size={44} />
+                      <ShareQR
+                        url={`${location.origin}/f/${f.id}`}
+                        title={f.schema.title_en}
+                        subtitle={f.schema.title_ja}
+                        size={44}
+                      />
                     </td>
                     <td>
                       <span className="cell-title">{f.schema.title_en}</span>

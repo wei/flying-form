@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getForm, submitValues } from "../lib/fb";
-import LinkedQR from "../components/LinkedQR";
+import ShareQR from "../components/ShareQR";
 import { t } from "../lib/i18n";
 import type { FormValues, Lang, StoredForm } from "../lib/types";
 import FieldInput, { validateField } from "../components/FieldInput";
@@ -49,7 +49,7 @@ export default function Fill() {
         <p>{t("successBody", lang)}</p>
         <div className="qr-box viewfinder">
           <span className="vf" aria-hidden="true" />
-          <LinkedQR value={qrPayload} size={220} />
+          <ShareQR url={qrPayload} title={title} size={220} />
         </div>
         <p className="sub-ref">#{subId}</p>
       </div>
