@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import AdminNew from "./pages/AdminNew";
 import AdminFormDetail from "./pages/AdminFormDetail";
@@ -10,7 +11,7 @@ export default function App() {
     <LangProvider>
       <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/admin" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/new" element={<AdminNew />} />
         <Route path="/admin/form/:formId" element={<AdminFormDetail />} />

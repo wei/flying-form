@@ -8,15 +8,17 @@
 
 The visitor fills it on their phone by scanning a QR. The enterprise scans the visitor's success QR back and the exact submission opens on the dashboard. Every model call runs on Kimi K2.7 via ai& inference, in Japan.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](./LICENSE)
-![React 19](https://img.shields.io/badge/React-19-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-6-black)
-![Firebase](https://img.shields.io/badge/Firebase-Hosting%20%2B%20Firestore-black)
-![Model: Kimi K2.7 on ai&](https://img.shields.io/badge/Model-Kimi%20K2.7%20on%20ai%26-black)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](./LICENSE)
+![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Hosting%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=white)
+![Model: Kimi K2.7 on ai&](https://img.shields.io/badge/Model-Kimi%20K2.7%20on%20ai%26-7c3aed)
 
 **[Live demo → flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)** &nbsp;·&nbsp; open `/admin` to create a form, `/f/:formId` to fill one
 
-Built for the **ai& × Moonshot Tokyo Hackathon Night** — Enterprise Workflow / AI Agent track.
+Built for the **ai& × Moonshot Tokyo Hackathon Night**: Enterprise Workflow / AI Agent track.
+
+[Problem](#the-problem) &nbsp;·&nbsp; [What it does](#what-it-does) &nbsp;·&nbsp; [Demo](#demo) &nbsp;·&nbsp; [How it works](#how-it-works) &nbsp;·&nbsp; [Run it](#run-it) &nbsp;·&nbsp; [Status](#status) &nbsp;·&nbsp; [Security](#demo-scope--security)
 
 </div>
 
@@ -24,26 +26,29 @@ Built for the **ai& × Moonshot Tokyo Hackathon Night** — Enterprise Workflow 
 
 ## The problem
 
-Japanese enterprises — property, facilities, clinics, city offices — still run intake on paper. Someone photographs, re-keys, and files each sheet by hand. Building a digital equivalent normally costs a developer days per form, so most forms never get digitized.
+Japanese enterprises (property, facilities, clinics, city offices) still run intake on paper. Someone photographs, re-keys, and files each sheet by hand. Building a digital equivalent normally costs a developer days per form, so most forms never get digitized.
 
 Paper also excludes people. A Japanese-only sheet is unusable to the foreign residents and visitors across Tokyo, invisible to a screen reader, and hard for anyone with low vision or a motor barrier. Digitizing the form is not only an efficiency win; it is what makes the form accessible at all.
 
 ## What it does
 
-You point a phone at a paper form. Ten seconds later you have a real mobile form: right input type per field, inline validation, an English/Japanese toggle, and a shareable QR. A visitor scans it, fills a clean grouped-screen wizard, and submits. Their phone shows a success QR. You scan that QR at the desk and their submission opens live.
+You point a phone at a paper form. Ten seconds later you have a real mobile form: the right input type per field, inline validation, an English/Japanese toggle, and a shareable QR. A visitor scans it, fills a clean grouped-screen wizard, and submits. Their phone shows a success QR. You scan that QR at the desk and their submission opens live.
 
-No field setup. No schema editor. One photo in, one working form out.
+> **No field setup. No schema editor. One photo in, one working form out.**
 
-## Demo flow
+## Demo
 
-Try it live at **[flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)**.
+> [!NOTE]
+> The value beat lands in about ten seconds: paper photo in, validated mobile form out. Try it live at **[flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)**.
 
-1. An operator shoots a paper form on the dashboard. Kimi reads it and a validated mobile form renders in about ten seconds. **This is the value beat.**
-2. A visitor scans the form QR on their own phone and fills the grouped wizard, flipping it to English mid-way.
-3. On submit, the visitor's phone shows a success QR.
-4. The operator scans that QR on the dashboard and the exact submission opens in the table, live.
+| # | On stage | What the room sees |
+|:-:|:--|:--|
+| 1 | Operator shoots a paper form on the dashboard | Kimi reads it; a validated mobile form and QR render in ~10s |
+| 2 | A judge scans the QR and fills the wizard | Grouped screens, flipped to English mid-way |
+| 3 | The judge submits | A success QR appears on their phone |
+| 4 | Operator scans that QR on the dashboard | The exact submission opens in the table, live |
 
-Two real Japanese forms are included under [`sample-forms/`](./sample-forms) if you want to try the generator without your own paper.
+Two real Japanese forms live in [`sample-forms/`](./sample-forms) if you want to try the generator without your own paper.
 
 ## How it works
 
@@ -60,33 +65,21 @@ flowchart LR
     SQ --> SCAN[Operator scans on /admin] --> D[Submission opens live]
 ```
 
-**One JSON object flows through the whole system.** Structure is separate from values, so the schema is generated once and every submission is just a `values` map keyed by field id.
+One JSON object flows through the whole system. Structure is separate from values, so the schema is generated once and every submission is just a `values` map keyed by field id.
 
-### Safety by construction
+### Four things that hold it together
 
-Kimi can only emit fields whose `type` is one of a closed nine-value enum:
+| | Guarantee | How |
+|:-:|:--|:--|
+| 🔒 | **Safe by construction** | Kimi can only emit nine field types (`text` `email` `tel` `number` `date` `select` `radio` `checkbox` `textarea`). Output is fence-stripped, `JSON.parse`d in a try/catch, and Zod-validated before render; bad output is rejected and retried up to 3×. A bad photo cannot produce a broken form. See [`types.ts`](./app/src/lib/types.ts). |
+| 🗾 | **Sovereign** | Vision and text both run on Kimi K2.7 on ai& inference, hosted in Japan. The browser never calls a foreign model API; a thin Cloud Function ([`index.js`](./app/functions/index.js)) proxies to ai& server-side. Personal data is processed on Japan-based inference, not shipped abroad. |
+| 🌐 | **Bilingual by default** | Kimi emits `label_en` and `label_ja` for every title, section, field, and option at generation time. The toggle flips the whole form instantly, with no extra call and no lost values. |
+| ♿ | **Accessible** | Native controls, associated `<label>`s, a semantic `progressbar`, an `aria-current` stepper, visible focus, and adequate contrast and tap targets. A screen reader can navigate it; a photo of paper cannot be navigated at all. |
 
-```
-text · email · tel · number · date · select · radio · checkbox · textarea
-```
+## Run it
 
-Model output is stripped of stray fences, `JSON.parse`d in a try/catch, and validated against a Zod schema before anything renders. Invalid output is rejected and retried up to three times, never displayed. A bad photo cannot produce a broken form — the generator has no vocabulary for one. See [`app/src/lib/types.ts`](./app/src/lib/types.ts).
-
-### Sovereignty
-
-Vision and text both run on **Kimi K2.7 on ai& inference, hosted in Japan**. The browser never calls a foreign model API. A thin Firebase Cloud Function ([`app/functions/index.js`](./app/functions/index.js)) proxies requests to ai& because the endpoint has no CORS; the key stays server-side. Personal data on the form is processed on Japan-based inference rather than shipped abroad.
-
-### Bilingual by default
-
-Kimi emits both `label_en` and `label_ja` for every title, section, field, and option at generation time. The language toggle flips the entire form instantly with no extra model call and without losing entered values.
-
-### Accessibility
-
-The fill surface is a real digital form built on native controls: associated `<label>`s, a semantic `progressbar`, visible focus, `aria-current` on the create-flow stepper, and adequate contrast and tap targets. A screen reader can navigate it; a photo of paper cannot be navigated at all. The English/Japanese toggle is the most concrete inclusion win, and it is a core P0 feature rather than an add-on.
-
-## Quickstart
-
-**Prerequisites:** Node 22+, a Firebase project (Hosting + Firestore), the ai& Cloud Function deployed.
+> [!TIP]
+> **Prerequisites:** Node 22+, a Firebase project (Hosting + Firestore), and the ai& Cloud Function deployed.
 
 ```bash
 cd app

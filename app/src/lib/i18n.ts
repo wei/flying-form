@@ -81,6 +81,27 @@ const STRINGS = {
   submission: { en: "Submission", ja: "回答" },
   loadingForm: { en: "Loading form…", ja: "フォームを読み込んでいます…" },
   formNotExist: { en: "This form does not exist.", ja: "このフォームは存在しません。" },
+
+  // ---- Landing ----
+  heroTitle: {
+    en: "Paper form in. Mobile form out.",
+    ja: "紙のフォームが、そのままモバイルフォームに。",
+  },
+  heroSub: {
+    en: "Photograph any paper form and share a QR code. Visitors fill it on their own phone, in Japanese or English, and show a receipt QR at the desk.",
+    ja: "紙のフォームを撮影してQRコードを共有するだけ。来訪者は自分のスマホで日本語でも英語でも入力し、受付で受領QRを提示できます。",
+  },
+  heroCta: { en: "Open dashboard", ja: "ダッシュボードを開く" },
+  stepShoot: { en: "Photograph", ja: "撮影" },
+  stepShootSub: { en: "One photo builds the form", ja: "写真一枚でフォームが完成" },
+  stepFill: { en: "Fill", ja: "入力" },
+  stepFillSub: { en: "On the visitor's own phone", ja: "来訪者自身のスマホで" },
+  stepReceive: { en: "Received", ja: "受付" },
+  stepReceiveSub: { en: "Scan the receipt QR at the desk", ja: "受付で受領QRをスキャン" },
+  sovereignty: {
+    en: "Every inference runs on Kimi K2.7 via ai&, in Japan.",
+    ja: "すべての推論は、日本国内のai&上のKimi K2.7で実行されます。",
+  },
 } as const;
 
 export type StringKey = keyof typeof STRINGS;
