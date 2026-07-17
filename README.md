@@ -12,7 +12,9 @@ The visitor fills it on their phone by scanning a QR. The enterprise scans the v
 ![Firebase](https://img.shields.io/badge/Firebase-Hosting%20%2B%20Firestore-FFCA28?logo=firebase&logoColor=white)
 ![Model: Kimi K2.7 on ai&](https://img.shields.io/badge/Model-Kimi%20K2.7%20on%20ai%26-7c3aed)
 
-**[Live demo → flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)** &nbsp;·&nbsp; open `/admin` to create a form, `/f/:formId` to fill one &nbsp;·&nbsp; **[Slide deck →](https://flying-form-9f6b3.web.app/deck.html)** ([source](./deck/flying-form-deck.html))
+**[Live demo → flying-form-9f6b3.web.app](https://flying-form-9f6b3.web.app)** &nbsp;·&nbsp; open `/admin` to create a form, `/f/:formId` to fill one
+
+**[Slide deck →](https://flying-form-9f6b3.web.app/deck.html)** ([source](./deck/flying-form-deck.html))
 
 Built for the **ai& × Moonshot Tokyo Hackathon Night**: Enterprise Workflow / AI Agent track.
 
