@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
 import { getForm, submitValues } from "../lib/fb";
+import LinkedQR from "../components/LinkedQR";
 import { t } from "../lib/i18n";
 import type { FormValues, Lang, StoredForm } from "../lib/types";
 import FieldInput, { validateField } from "../components/FieldInput";
@@ -48,7 +48,7 @@ export default function Fill() {
         <h1>{t("successTitle", lang)}</h1>
         <p>{t("successBody", lang)}</p>
         <div className="qr-box">
-          <QRCodeSVG value={qrPayload} size={220} />
+          <LinkedQR value={qrPayload} size={220} />
         </div>
         <p className="sub-ref">#{subId}</p>
       </div>

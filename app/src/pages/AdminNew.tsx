@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
 import { generateSchema } from "../lib/kimi";
 import { publishForm } from "../lib/fb";
 import type { FormSchema, Lang } from "../lib/types";
 import FormPreview from "../components/FormPreview";
+import LinkedQR from "../components/LinkedQR";
 
 type Stage =
   | { s: "pick" }
@@ -111,7 +111,7 @@ export default function AdminNew() {
         <div className="published center">
           <h2>Form is live</h2>
           <div className="qr-box">
-            <QRCodeSVG value={`${location.origin}/f/${stage.formId}`} size={260} />
+            <LinkedQR value={`${location.origin}/f/${stage.formId}`} size={260} />
           </div>
           <p>
             <a href={`/f/${stage.formId}`} target="_blank" rel="noreferrer">

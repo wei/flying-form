@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
 import { watchForms } from "../lib/fb";
 import type { StoredForm } from "../lib/types";
 import ScanModal from "../components/ScanModal";
+import LinkedQR from "../components/LinkedQR";
 
 export default function Admin() {
   const [forms, setForms] = useState<StoredForm[]>([]);
@@ -40,9 +40,16 @@ export default function Admin() {
       )}
       <div className="form-grid">
         {forms.map((f) => (
-          <Link key={f.id} to={`/admin/form/${f.id}`} className="form-card">
+          <div
+            key={f.id}
+            className="form-card"
+            role="link"
+            tabIndex={0}
+            onClick={() => nav(`/admin/form/${f.id}`)}
+            onKeyDown={(e) => e.key === "Enter" && nav(`/admin/form/${f.id}`)}
+          >
             <div className="form-card-qr">
-              <QRCodeSVG value={`${location.origin}/f/${f.id}`} size={72} />
+              <LinkedQR value={`${location.origin}/f/${f.id}`} size={72} />
             </div>
             <div>
               <h3>{f.schema.title_en}</h3>
@@ -51,7 +58,7 @@ export default function Admin() {
                 {f.schema.sections.length} sections · /f/{f.id}
               </p>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
       {scanning && <ScanModal onResult={onScan} onClose={() => setScanning(false)} />}

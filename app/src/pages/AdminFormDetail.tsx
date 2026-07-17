@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
 import { getForm, watchSubmissions } from "../lib/fb";
+import LinkedQR from "../components/LinkedQR";
 import type { FormField, StoredForm, Submission } from "../lib/types";
 import ScanModal from "../components/ScanModal";
 
@@ -63,7 +63,7 @@ export default function AdminFormDetail() {
       <div className="detail-grid">
         <aside className="detail-side">
           <div className="qr-box">
-            <QRCodeSVG value={`${location.origin}/f/${form.id}`} size={160} />
+            <LinkedQR value={`${location.origin}/f/${form.id}`} size={160} />
           </div>
           <p>
             <a href={`/f/${form.id}`} target="_blank" rel="noreferrer">
