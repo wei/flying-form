@@ -1,0 +1,138 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { QRCodeSVG } from "qrcode.react";
+import { getForm, watchSubmissions } from "../lib/fb";
+import type { FormField, StoredForm, Submission } from "../lib/types";
+import ScanModal from "../components/ScanModal";
+
+function display(field: FormField | undefined, v: string | string[]): string {
+  if (Array.isArray(v)) {
+    return v
+      .map((x) => field?.options?.find((o) => o.value === x)?.label_en ?? x)
+      .join(", ");
+  }
+  return field?.options?.find((o) => o.value === v)?.label_en ?? v;
+}
+
+export default function AdminFormDetail() {
+  const { formId, subId } = useParams<{ formId: string; subId?: string }>();
+  const [form, setForm] = useState<StoredForm | null | undefined>(undefined);
+  const [subs, setSubs] = useState<Submission[]>([]);
+  const [scanning, setScanning] = useState(false);
+  const nav = useNavigate();
+
+  useEffect(() => {
+    if (formId) getForm(formId).then(setForm);
+  }, [formId]);
+  useEffect(() => (formId ? watchSubmissions(formId, setSubs) : undefined), [formId]);
+
+  const fields = useMemo(() => {
+    const map = new Map<string, FormField>();
+    form?.schema.sections.forEach((s) => s.fields.forEach((f) => map.set(f.id, f)));
+    return map;
+  }, [form]);
+
+  if (form === undefined) return <div className="admin-shell">Loading…</div>;
+  if (form === null) return <div className="admin-shell">Form not found.</div>;
+
+  const fieldList = [...fields.values()];
+  const selected = subId ? subs.find((s) => s.id === subId) : undefined;
+
+  const onScan = (text: string) => {
+    setScanning(false);
+    try {
+      nav(new URL(text).pathname);
+    } catch {
+      alert(`Not a Flying Form QR: ${text}`);
+    }
+  };
+
+  return (
+    <div className="admin-shell">
+      <header className="admin-header">
+        <h1>
+          <Link to="/admin">✈️ Flying Form</Link> · {form.schema.title_en}
+        </h1>
+        <div className="admin-actions">
+          <button className="btn secondary" onClick={() => setScanning(true)}>
+            Scan success QR
+          </button>
+        </div>
+      </header>
+
+      <div className="detail-grid">
+        <aside className="detail-side">
+          <div className="qr-box">
+            <QRCodeSVG value={`${location.origin}/f/${form.id}`} size={160} />
+          </div>
+          <p>
+            <a href={`/f/${form.id}`} target="_blank" rel="noreferrer">
+              /f/{form.id}
+            </a>
+          </p>
+          <p className="meta">{subs.length} submissions</p>
+        </aside>
+
+        <div className="detail-main">
+          <table className="subs-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Time</th>
+                {fieldList.slice(0, 4).map((f) => (
+                  <th key={f.id}>{f.label_en}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {subs.map((s) => (
+                <tr
+                  key={s.id}
+                  className={s.id === subId ? "selected" : ""}
+                  onClick={() => nav(`/admin/form/${form.id}/sub/${s.id}`)}
+                >
+                  <td>{s.id.slice(0, 6)}</td>
+                  <td>{new Date(s.createdAt).toLocaleTimeString()}</td>
+                  {fieldList.slice(0, 4).map((f) => (
+                    <td key={f.id}>{display(f, s.values[f.id] ?? "")}</td>
+                  ))}
+                </tr>
+              ))}
+              {subs.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="empty">
+                    No submissions yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {selected && (
+        <div className="modal-backdrop" onClick={() => nav(`/admin/form/${form.id}`)}>
+          <div className="modal submission-view" onClick={(e) => e.stopPropagation()}>
+            <h2>Submission #{selected.id.slice(0, 6)}</h2>
+            <p className="meta">{new Date(selected.createdAt).toLocaleString()}</p>
+            <dl>
+              {fieldList.map((f) => (
+                <div key={f.id} className="sub-row">
+                  <dt>
+                    {f.label_en} <span className="jp">{f.label_ja}</span>
+                  </dt>
+                  <dd>{display(f, selected.values[f.id] ?? "") || "—"}</dd>
+                </div>
+              ))}
+            </dl>
+            <button className="btn secondary" onClick={() => nav(`/admin/form/${form.id}`)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {scanning && <ScanModal onResult={onScan} onClose={() => setScanning(false)} />}
+    </div>
+  );
+}
