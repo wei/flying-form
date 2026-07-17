@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { generateSchema } from "../lib/kimi";
 import { publishForm } from "../lib/fb";
 import type { FormSchema, Lang } from "../lib/types";
 import FormPreview from "../components/FormPreview";
 import LinkedQR from "../components/LinkedQR";
+import AdminShell from "../components/AdminShell";
 
 type Stage =
   | { s: "pick" }
@@ -28,6 +29,7 @@ async function fileToDataUrl(file: File, maxDim = 1600): Promise<string> {
 export default function AdminNew() {
   const [stage, setStage] = useState<Stage>({ s: "pick" });
   const [lang, setLang] = useState<Lang>("en");
+  const nav = useNavigate();
 
   const onFile = async (file: File | undefined) => {
     if (!file) return;
@@ -52,13 +54,10 @@ export default function AdminNew() {
   };
 
   return (
-    <div className="admin-shell">
-      <header className="admin-header">
-        <h1>
-          <Link to="/admin">✈️ Flying Form</Link> · New form
-        </h1>
-      </header>
-
+    <AdminShell
+      title="New form"
+      subtitle="Upload a paper form and Kimi will build the digital version."
+    >
       {stage.s === "pick" && (
         <label className="dropzone">
           <input
@@ -68,8 +67,9 @@ export default function AdminNew() {
             hidden
             onChange={(e) => onFile(e.target.files?.[0])}
           />
-          <span className="dz-icon">📷</span>
-          <span>Photograph or upload a paper form</span>
+          <span className="dz-icon" aria-hidden="true">📷</span>
+          <span className="dz-title">Photograph or upload a paper form</span>
+          <span className="dz-hint">JPEG or PNG · flat lighting helps accuracy</span>
         </label>
       )}
 
@@ -92,7 +92,7 @@ export default function AdminNew() {
                 {lang === "ja" ? "English" : "日本語"}
               </button>
               <button className="btn primary" onClick={() => onPublish(stage.schema)}>
-                Publish
+                Publish form
               </button>
             </div>
             <FormPreview schema={stage.schema} lang={lang} />
@@ -103,12 +103,12 @@ export default function AdminNew() {
       {stage.s === "publishing" && (
         <div className="gen-status center">
           <div className="spinner" />
-          <p>Publishing…</p>
+          <p>Publishing form…</p>
         </div>
       )}
 
       {stage.s === "published" && (
-        <div className="published center">
+        <div className="published">
           <h2>Form is live</h2>
           <div className="qr-box">
             <LinkedQR value={`${location.origin}/f/${stage.formId}`} size={260} />
@@ -118,9 +118,14 @@ export default function AdminNew() {
               {location.origin}/f/{stage.formId}
             </a>
           </p>
-          <Link className="btn primary" to={`/admin/form/${stage.formId}`}>
-            Open dashboard
-          </Link>
+          <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+            <button className="btn secondary" onClick={() => nav("/admin")}>
+              Back to forms
+            </button>
+            <button className="btn primary" onClick={() => nav(`/admin/form/${stage.formId}`)}>
+              Open dashboard
+            </button>
+          </div>
         </div>
       )}
 
@@ -132,6 +137,6 @@ export default function AdminNew() {
           </button>
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { getForm, watchSubmissions } from "../lib/fb";
 import LinkedQR from "../components/LinkedQR";
 import type { FormField, StoredForm, Submission } from "../lib/types";
 import ScanModal from "../components/ScanModal";
+import AdminShell from "../components/AdminShell";
 
 function display(field: FormField | undefined, v: string | string[]): string {
   if (Array.isArray(v)) {
@@ -20,11 +21,20 @@ export default function AdminFormDetail() {
   const [subs, setSubs] = useState<Submission[]>([]);
   const [scanning, setScanning] = useState(false);
   const nav = useNavigate();
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (formId) getForm(formId).then(setForm);
   }, [formId]);
   useEffect(() => (formId ? watchSubmissions(formId, setSubs) : undefined), [formId]);
+
+  useEffect(() => {
+    if (subId) {
+      dialogRef.current?.showModal();
+    } else {
+      dialogRef.current?.close();
+    }
+  }, [subId]);
 
   const fields = useMemo(() => {
     const map = new Map<string, FormField>();
@@ -32,8 +42,26 @@ export default function AdminFormDetail() {
     return map;
   }, [form]);
 
-  if (form === undefined) return <div className="admin-shell">Loading…</div>;
-  if (form === null) return <div className="admin-shell">Form not found.</div>;
+  if (form === undefined) {
+    return (
+      <AdminShell title="Loading…">
+        <div className="gen-status">
+          <div className="spinner" />
+          <p>Loading form…</p>
+        </div>
+      </AdminShell>
+    );
+  }
+  if (form === null) {
+    return (
+      <AdminShell title="Form not found">
+        <div className="center">
+          <p className="error">This form does not exist.</p>
+          <button className="btn primary" onClick={() => nav("/admin")}>Back to forms</button>
+        </div>
+      </AdminShell>
+    );
+  }
 
   const fieldList = [...fields.values()];
   const selected = subId ? subs.find((s) => s.id === subId) : undefined;
@@ -48,29 +76,24 @@ export default function AdminFormDetail() {
   };
 
   return (
-    <div className="admin-shell">
-      <header className="admin-header">
-        <h1>
-          <Link to="/admin">✈️ Flying Form</Link> · {form.schema.title_en}
-        </h1>
-        <div className="admin-actions">
-          <button className="btn secondary" onClick={() => setScanning(true)}>
-            Scan success QR
-          </button>
-        </div>
-      </header>
-
+    <AdminShell
+      title={form.schema.title_en}
+      subtitle={form.schema.title_ja}
+      actions={
+        <button className="btn secondary" onClick={() => setScanning(true)}>
+          Scan success QR
+        </button>
+      }
+    >
       <div className="detail-grid">
         <aside className="detail-side">
           <div className="qr-box">
             <LinkedQR value={`${location.origin}/f/${form.id}`} size={160} />
           </div>
-          <p>
-            <a href={`/f/${form.id}`} target="_blank" rel="noreferrer">
-              /f/{form.id}
-            </a>
-          </p>
-          <p className="meta">{subs.length} submissions</p>
+          <a href={`/f/${form.id}`} target="_blank" rel="noreferrer">
+            Open form
+          </a>
+          <p className="meta">{subs.length} {subs.length === 1 ? "submission" : "submissions"}</p>
         </aside>
 
         <div className="detail-main">
@@ -110,29 +133,37 @@ export default function AdminFormDetail() {
         </div>
       </div>
 
-      {selected && (
-        <div className="modal-backdrop" onClick={() => nav(`/admin/form/${form.id}`)}>
+      <dialog
+        ref={dialogRef}
+        className="modal-backdrop"
+        onClick={() => nav(`/admin/form/${form.id}`)}
+        onClose={() => nav(`/admin/form/${form.id}`)}
+      >
+        {selected && (
           <div className="modal submission-view" onClick={(e) => e.stopPropagation()}>
+            <div className="close-row">
+              <button className="btn ghost" onClick={() => nav(`/admin/form/${form.id}`)}>
+                ✕ Close
+              </button>
+            </div>
             <h2>Submission #{selected.id.slice(0, 6)}</h2>
             <p className="meta">{new Date(selected.createdAt).toLocaleString()}</p>
             <dl>
               {fieldList.map((f) => (
                 <div key={f.id} className="sub-row">
                   <dt>
-                    {f.label_en} <span className="jp">{f.label_ja}</span>
+                    {f.label_en}
+                    <span className="jp">{f.label_ja}</span>
                   </dt>
                   <dd>{display(f, selected.values[f.id] ?? "") || "—"}</dd>
                 </div>
               ))}
             </dl>
-            <button className="btn secondary" onClick={() => nav(`/admin/form/${form.id}`)}>
-              Close
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </dialog>
 
       {scanning && <ScanModal onResult={onScan} onClose={() => setScanning(false)} />}
-    </div>
+    </AdminShell>
   );
 }

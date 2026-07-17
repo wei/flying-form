@@ -44,7 +44,7 @@ export default function Fill() {
     return (
       <div className="fill-shell center success">
         {langToggle}
-        <div className="success-check">✓</div>
+        <div className="success-check" aria-hidden="true">✓</div>
         <h1>{t("successTitle", lang)}</h1>
         <p>{t("successBody", lang)}</p>
         <div className="qr-box">
@@ -95,6 +95,7 @@ export default function Fill() {
         aria-valuemin={1}
         aria-valuemax={sections.length}
         aria-valuenow={step + 1}
+        aria-label={`Step ${step + 1} of ${sections.length}`}
       >
         <div className="progress-bar" style={{ width: `${((step + 1) / sections.length) * 100}%` }} />
       </div>
