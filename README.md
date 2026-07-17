@@ -18,11 +18,23 @@ The visitor fills it on their phone by scanning a QR. The enterprise scans the v
 
 Built for the **ai& × Moonshot Tokyo Hackathon Night**: Enterprise Workflow / AI Agent track.
 
-[Problem](#the-problem) &nbsp;·&nbsp; [What it does](#what-it-does) &nbsp;·&nbsp; [Demo](#demo) &nbsp;·&nbsp; [How it works](#how-it-works) &nbsp;·&nbsp; [Run it](#run-it) &nbsp;·&nbsp; [Status](#status) &nbsp;·&nbsp; [Security](#demo-scope--security)
+[Kimi × ai&](#powered-by-kimi-k27-on-ai) &nbsp;·&nbsp; [Problem](#the-problem) &nbsp;·&nbsp; [What it does](#what-it-does) &nbsp;·&nbsp; [Demo](#demo) &nbsp;·&nbsp; [How it works](#how-it-works) &nbsp;·&nbsp; [Run it](#run-it) &nbsp;·&nbsp; [Status](#status) &nbsp;·&nbsp; [Security](#demo-scope--security)
 
 </div>
 
 ---
+
+## Powered by Kimi K2.7, on ai&
+
+> [!IMPORTANT]
+> **Every model call in Flying Form is Kimi K2.7, served on [ai&](https://www.aiand.com) inference in Japan. No other model is ever called.** This is the qualification gate for the event, and it is also the product thesis: personal data on the form is processed on Japan-based inference, never shipped to a foreign API.
+
+| Kimi call | Modality | What it does |
+|:--|:--|:--|
+| **Schema generation** | 🖼️ vision | Reads a photo of a paper form and returns a validated, bilingual field schema. |
+| **Prefill** *(scaffolded)* | 🖼️ vision | Reads a filled paper copy and maps handwritten values to field ids. |
+
+The browser never talks to ai& directly (the endpoint has no CORS). A thin Firebase Cloud Function in `asia-northeast1` ([`app/functions/index.js`](./app/functions/index.js)) proxies every request to `moonshotai/kimi-k2.7` server-side. The language toggle needs no call at all: both `label_en` and `label_ja` ship inside the schema Kimi generates. See [`app/src/lib/kimi.ts`](./app/src/lib/kimi.ts).
 
 ## The problem
 
